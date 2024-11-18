@@ -1,10 +1,63 @@
 # Introduction
 
-# pulling the data
+Air pollution is not only an environmental concern, but also a public health one. There is substantial evidence that indicates a link in adverse health outcomes, including an increase in mortality rates. Using quantitative analysis, statisticians in the past have been able to determine the exact link as well as use a multitude of methods to study these results.
+
+One example is seen in the article titled: *"Instabilities of Regression Estimates Relating Air Pollution to Mortality"*. The article aimed to explore the relationship between air pollution and mortality rates with the use of regression-based estimates. The authors use a various number of factors, such as rain, temperature, different levels of toxic chemicals, to determine a linear model between air pollution and mortality rates. They used ridge regression to create better coefficient estimates due to the underlying issues the data faced.
+
+## Objective
+
+The purpose of this report is to replicate the analyses that were conducted in the original study, using techniques that we have discussed in this class, as well as the use of modern technology. An important note is that the article was written in the 1970s, and the data and statistical methods were most likely conducted during that time. We are aware of the advanced technology we have now, and we hope to compare our output versus the original output, and perhaps observe better results. We also hope to learn more about statistical modeling as well as contribute to a better understanding of how methodologies change over time. Finally, we hope to truly understand and do our best to interpret the relationship between air pollution and mortality rates.
+
+# Literature Review
+
+# Methodology
+
+## Data Description
+
+## Regression Models
+
+## Assumptions
+
+## Reproduction Plan
+
+# Implementation
+
+## Exploratory Data Analysis
+
 ```{r}
+# pulling the data
 library("bestglm")
 data <- mcdonald
 
 head(data)
 ```
 
+## Multiple Linear Regression
+
+## Ridge Regression
+
+# Results
+
+## Comparison of Outputs
+
+## Deviations
+
+## Interpreting the Results
+
+# Challenges and Insights
+
+## Challenges
+
+## Insights
+
+# Conclusion
+
+## Significance
+
+## Summary
+
+## Future Work
+
+## Acknowledgements
+
+# References

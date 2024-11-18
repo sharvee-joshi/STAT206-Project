@@ -1,0 +1,10 @@
+# Introduction
+
+# pulling the data
+```{r}
+library("bestglm")
+data <- mcdonald
+
+head(data)
+```
+

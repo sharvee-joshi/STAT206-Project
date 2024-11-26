@@ -33,6 +33,54 @@ head(data)
 ```
 
 ## Multiple Linear Regression
+```{r}
+#first full model
+ols_model <- lm(data$MORT ~., data = data)
+summary(ols_model)
+```
+### Mallow's $C_p$
+
+```{r}
+#subset the modeling using Mallow's Cp
+library(MASS)
+ols_aic <- stepAIC(ols_model, direction = "both", trace = FALSE)
+summary(ols_aic)
+```
+```{r}
+#plotting mallow's Cp
+
+library(ggplot2)  # For plotting
+library(leaps)    # For all subset regression
+
+str(data)
+
+response <- "MORT"
+predictors <- setdiff(names(data), response)
+
+# Step 1: All Subsets Regression and Cp Calculation
+all_subsets <- regsubsets(MORT  ~ ., data = data, nvmax = length(predictors))
+subsets_summary <- summary(all_subsets)
+
+# Extract Mallows' Cp and number of predictors
+cp_data <- data.frame(
+  num_predictors = 1:length(subsets_summary$cp),
+  Cp = subsets_summary$cp
+)
+
+# Step 2: Visualize Mallows' Cp with ggplot2
+ggplot(cp_data, aes(x = num_predictors, y = Cp)) +
+  geom_point() +
+  geom_line() +
+  geom_point(data = cp_data[which.min(cp_data$Cp), ], aes(x = num_predictors, y = Cp),
+             color = "red", size = 3) +
+  labs(
+    title = "Mallows' Cp Plot for McDonald Data",
+    x = "Number of Predictors",
+    y = "Mallows' Cp"
+  ) +
+  theme_minimal()
+```
+
 
 ## Ridge Regression
 

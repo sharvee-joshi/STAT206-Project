@@ -10,7 +10,7 @@ The purpose of this report is to replicate the analyses that were conducted in t
 
 # Literature Review
 
-# Methodology
+# Methodology From Author
 
 ## Data Description
 
@@ -31,62 +31,136 @@ data <- mcdonald
 
 head(data)
 ```
+```{r}
+#Distribution of respose variable
+ggplot(data, aes(x = MORT)) +
+  geom_histogram(binwidth = 50, fill = "skyblue", color = "black") +
+  labs(
+    title = "Distribution of Mortality Rates",
+    x = "Mortality",
+    y = "Frequency"
+  ) +
+  theme_minimal()
+```
+
+
+
+```{r}
+# Scatterplot: Mortality vs. Pollution Variables
+hc <- ggplot(data, aes(x = HC, y = MORT)) +
+  geom_point(color = "blue") +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  labs(
+    title = "Mortality vs. Hydrocarbon Pollution",
+    x = "Hydrocarbon Pollution Potential",
+    y = "Mortality"
+  ) +
+  theme_minimal()
+
+nox <- ggplot(data, aes(x = NOX, y = MORT)) +
+  geom_point(color = "blue") +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  labs(
+    title = "Mortality vs. NoX Pollution",
+    x = "Hydrocarbon Pollution Potential",
+    y = "Mortality"
+  ) +
+  theme_minimal()
+
+so2 <- ggplot(data, aes(x = SOx, y = MORT)) +
+  geom_point(color = "blue") +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  labs(
+    title = "Mortality vs. SO2 Pollution",
+    x = "Hydrocarbon Pollution Potential",
+    y = "Mortality"
+  ) +
+  theme_minimal()
+
+library(ggpubr)
+ggarrange(
+  hc,nox,so2
+)
+```
+```{r}
+# correlation heat map
+library(reshape2)
+
+# Calculate correlation matrix
+cor_matrix <- cor(data)
+cor_data <- melt(cor_matrix)
+
+# Heatmap
+ggplot(cor_data, aes(Var1, Var2, fill = value)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient2(
+    low = "blue", high = "red", mid = "white",
+    midpoint = 0, limit = c(-1, 1)
+  ) +
+  labs(title = "Correlation Heatmap", x = "", y = "") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+
 
 ## Multiple Linear Regression
 ```{r}
 #first full model
-ols_model <- lm(data$MORT ~., data = data)
+ols_model <- lm(MORT ~., data = data)
 summary(ols_model)
 ```
+```{r}
+ggplot(data = data.frame(
+  residuals = residuals(ols_model),
+  fitted = fitted(ols_model)
+), aes(x = fitted, y = residuals)) +
+  geom_point() +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  labs(
+    title = "Residuals vs. Fitted Values",
+    x = "Fitted Values",
+    y = "Residuals"
+  ) +
+  theme_minimal()
+```
+
+
 ### Mallow's $C_p$
 
-```{r}
-#subset the modeling using Mallow's Cp
-library(MASS)
-ols_aic <- stepAIC(ols_model, direction = "both", trace = FALSE)
-summary(ols_aic)
-```
 ```{r}
 #plotting mallow's Cp
 
 library(ggplot2)  # For plotting
 library(leaps)    # For all subset regression
 
-str(data)
+# str(data)
 
-response <- "MORT"
-predictors <- setdiff(names(data), response)
-
-# Step 1: All Subsets Regression and Cp Calculation
-all_subsets <- regsubsets(MORT  ~ ., data = data, nvmax = length(predictors))
-subsets_summary <- summary(all_subsets)
-
-# Extract Mallows' Cp and number of predictors
-cp_data <- data.frame(
-  num_predictors = 1:length(subsets_summary$cp),
-  Cp = subsets_summary$cp
-)
-
-# Step 2: Visualize Mallows' Cp with ggplot2
-ggplot(cp_data, aes(x = num_predictors, y = Cp)) +
-  geom_point() +
-  geom_line() +
-  geom_point(data = cp_data[which.min(cp_data$Cp), ], aes(x = num_predictors, y = Cp),
-             color = "red", size = 3) +
-  labs(
-    title = "Mallows' Cp Plot for McDonald Data",
-    x = "Number of Predictors",
-    y = "Mallows' Cp"
-  ) +
-  theme_minimal()
 ```
 
+
+```{r}
+#subset the modeling using stepAIC, or the Akaike Information Criterion
+library(MASS)
+ols_aic <- stepAIC(ols_model, direction = "both", trace = FALSE)
+summary(ols_aic)
+```
+```{r}
+# get the AIC for Cp Mallows then compare with stepAIC, full, and CP Mallows
+
+```
+Mallow's C_p performs slightly better 
 
 ## Ridge Regression
 
 # Results
 
 ## Comparison of Outputs
+
+```{r}
+# want to compare the AIC, ridge regression, CP Mallow, and PCA to the full model 
+```
+
 
 ## Deviations
 

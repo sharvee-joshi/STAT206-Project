@@ -36,6 +36,202 @@ head(data)
 
 ## Ridge Regression
 
+```{r}
+head(data)
+colnames(data)
+
+length(data)
+```
+
+
+```{r}
+library(glmnet)
+library(MASS)
+
+fit.ols <- lm(MORT ~ ., data = mcdonald)
+summary(fit.ols)
+
+```
+
+
+
+```{r}
+fit.ridge <- lm.ridge(MORT ~ ., data = mcdonald,
+  lambda = 0.05 ^ seq(-3, 1, length = 16)
+)
+coef(fit.ridge)[ , ]
+
+```
+```{r}
+coef(fit.ridge)[16, ]
+```
+```{r}
+
+plot(fit.ridge)
+```
+
+Let't take a look at the multicollinearity
+
+```{r}
+vif(fit.ols)
+```
+```{r}
+cor_matrix <- cor(mcdonald[, -which(names(mcdonald) == "MORT")])
+heatmap(cor_matrix, symm = TRUE, main = "Correlation Heatmap")
+
+
+```
+```{r}
+# Remove 'WWDRK' as an example
+mcdonald_reduced <- mcdonald[, -which(names(mcdonald) == "WWDRK")]
+fit_reduced <- lm(MORT ~ ., data = mcdonald_reduced)
+summary(fit_reduced)
+
+
+```
+
+```{r}
+
+#Principle Component 
+library(pls)
+pcr_model <- pcr(MORT ~ ., data = mcdonald, scale = TRUE, validation = "CV")
+summary(pcr_model)
+
+
+```
+
+
+
+Another option would be using LASSO 
+
+(Using code provided by Professor Landeros' Lecture notes)
+```{r}
+
+set.seed(1234)
+
+
+X <- as.matrix(mcdonald[, -which(names(mcdonald) == "MORT")])
+y <- mcdonald$MORT
+
+# helper functions
+mse <- function(beta) {
+  mean((y - X %*% beta)^2)
+}
+l1 <- function(beta) {
+  sum(abs(beta))
+}
+
+
+coef.seq <- seq(from = -1, to = 5, length.out = 200)
+
+mse <- outer(coef.seq, coef.seq, Vectorize(function(b1, b2) {
+  beta <- rep(0, ncol(X))
+  beta[1] <- b1  # First predictor
+  beta[2] <- b2  # Second predictor
+  mse(beta)
+}))
+l1.levels <- outer(coef.seq, coef.seq, Vectorize(function(b1, b2) l1(c(b1, b2, rep(0, ncol(X) - 2)))))
+
+ols.coefs <- coefficients(fit.ols)[-1]  
+lasso.coefs <- as.numeric(coef(lasso_model, s = "lambda.min")[-1]) 
+
+```
+
+
+```{r}
+
+contour(x = coef.seq, y = coef.seq, z = m,
+  drawlabels = FALSE,
+  nlevels = 30,
+  col = "grey",
+  main = "Contours of MSE vs. Contours of L1"
+)
+
+
+contour(x = coef.seq, y = coef.seq, z = l1.levels,
+  nlevels = 20,
+  add = TRUE
+)
+
+points(x = ols.coefs[1], y = ols.coefs[2], pch = "+")
+points(0, 0)
+
+
+```
+```{r}
+# Choose two predictors for visualization
+predictors <- c("PREC", "NONW")
+X_subset <- X[, predictors]
+
+# Helper functions for MSE and L1
+mse <- function(beta) {
+  mean((y - X_subset %*% beta)^2)
+}
+
+l1 <- function(beta) {
+  sum(abs(beta))
+}
+
+# Recalculate MSE and L1 levels
+m <- outer(coef.seq, coef.seq, Vectorize(function(b1, b2) mse(c(b1, b2))))
+l1.levels <- outer(coef.seq, coef.seq, Vectorize(function(b1, b2) l1(c(b1, b2))))
+
+# Get coefficients for the selected predictors
+ols_coefs_subset <- coefficients(fit.ols)[predictors]
+lasso_coefs_subset <- coef(lasso_model, s = "lambda.min")[predictors]
+
+# Contour plot
+contour(x = coef.seq, y = coef.seq, z = m,
+  drawlabels = FALSE,
+  nlevels = 30,
+  col = "grey",
+  main = "Contours of MSE vs. Contours of L1"
+)
+
+contour(x = coef.seq, y = coef.seq, z = l1.levels,
+  nlevels = 20,
+  add = TRUE
+)
+
+# Plot OLS and LASSO coefficients
+points(ols_coefs_subset[1], ols_coefs_subset[2], pch = "+", col = "blue", cex = 1.5, lwd = 2)
+points(lasso_coefs_subset[1], lasso_coefs_subset[2], pch = "x", col = "red", cex = 1.5, lwd = 2)
+legend("topright", legend = c("OLS", "LASSO"), pch = c("+", "x"), col = c("blue", "red"))
+
+
+```
+
+
+
+```{r}
+
+fit.lasso <- glmnet(mcdonald[, 1:6], mcdonald[, 7],
+  family = "gaussian",
+  alpha = 1,
+  lambda = 10 ^ seq(-3, 1, length = 101)
+)
+fit.lasso$lambda[1]
+```
+
+```{r}
+coef(fit.lasso)[, 1]
+
+```
+
+```{r}
+fit.lasso$lambda[101]
+```
+
+```{r}
+coef(fit.lasso)[, 101]
+```
+
+
+```{r}
+plot(fit.lasso)
+```
+
+
 # Results
 
 ## Comparison of Outputs

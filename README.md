@@ -1,4 +1,4 @@
-# Replication Project: Instabilities of Regression Estimates Relating Air Pollution to Mortality
+# Replication and Extension: Instabilities of Regression Estimates Relating Air Pollution to Mortality
 
 ## Overview
 

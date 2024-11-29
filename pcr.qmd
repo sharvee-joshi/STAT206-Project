@@ -2,23 +2,25 @@
 title: "Principal Component Regression (PCR)"
 format: html
 toc: true
-editor: visual
 ---
 
 ### Motivation for PCR
 
-We know that in a multiple regression model, when the predictors ($X_i$s) are linearly dependent (correlated), there is multicollinearity in the model, which causes the following issue for the fitted multiple regression model:
+In a linear regression model, when the predictors ($X_i$s) are linearly dependent or highly correlated, we say that multicollinearity exists in the model, which causes the following issue for the fitted multiple regression model:
 
-- The estimate of any parameter, say $\hat{\beta_2}$, depends on all the variables included in the model. For example, $\hat{\beta_2}$ does not merely reflect the effect of the $X_2$ variable on the response variable $Y$. Due to multicollinearity, the other variables affect the estimate of the parameter $\beta_2$. As a result, our inference about the effect of each predictor on the response is not reliable.
+-   The estimate of any parameter, say $\hat{\beta_2}$, depends on all the variables included in the model. For example, $\hat{\beta_2}$ does not merely reflect the effect of the $X_2$ variable on the response variable $Y$. Due to multicollinearity, the other variables affect the estimate of the parameter $\beta_2$. As a result, our inference about the effect of each predictor on the response is not reliable.
 
-We have 15 predictors in our dataset, and we want to investigate the relationship between them and the response variable (mortality). There is a high correlation between most of the predictors. Figure-pcr-1 illustrates this:
+We have 15 predictors in our dataset, and we want to investigate the relationship between them and the response variable (mortality). There is a high correlation between most of the predictors. @fig-corr-xx illustrates this:
 
 ```{r}
-rm(list=ls()) # Cleaning the memory
+#|warning: false
+#------------------Cleaning the memory
+rm(list=ls())
 #------------------Reading Data
+library(leaps)
 library("bestglm")
 data <- data.frame(mcdonald)
-#------------------Centralize-Normalize Data
+#-----------------Centralize-Normalize Data
 data.norm <- data
 for(i in 1:ncol(data)){
   data.norm[,i] <- data[,i]-mean(data[,i])
@@ -28,83 +30,82 @@ for(i in 1:ncol(data)){
 x.norm <- data.norm
 mort.norm <- x.norm$MORT
 x.norm$MORT <- NULL
-#---------------Correlation Plot for predictors (X)
+#----------------Correlation Plot for predictors (X)
 res_xx <- cor(x.norm, method="pearson")
 library(corrplot)
+```
+
+```{r}
+#| label: fig-corr-xx
+#| fig-cap: Correlation plot for 15 predictors of the data set
+#| fig-width: 8
+#| fig-height: 8
 corrplot(res_xx, method = 'ellipse', order = 'AOE', type = 'upper')
 ```
 
 The correlation plot of the predictors indicates there is Multicolleniarity among predictors. For overcoming this issue the authors of the paper used Ridge Regression method and after exploring and comparing several Ridge and Ordinary Least Square models (Multiple Regression Models) they conclude that:
 
-::: {.callout}
-
- *"In summary, the ridge regression coefficients obtained at $k = o.2$ for the fifteen explanatory variables listed in Table IV, with one notable exception($NO_x$ ), appear to be reasonable values upon which to base a quantification of the association between these variables and the total mortality rate."*
- 
+::: callout
+"In summary, the ridge regression coefficients obtained at $k = o.2$ for the fifteen explanatory variables listed in Table IV, with one notable exception($NO_x$ ), appear to be reasonable values upon which to base a quantification of the association between these variables and the total mortality rate."
 :::
 
 In the following, we present a Principal Component Regression model with all fifteen predictors as an alternative model for overcoming multicollinearity and compare it with the final Ridge Regression model suggested by the authors.
 
 ### Modeling PCR
 
-In PCR, we try to provide a weighted linear combination of the predictors ($X_i$s) like:
-$$Z_k = v_{k1}X_1 + v_{k2}X_2 + \dots + v_{kp}X_p$$
-We then replace the correlated variables $[X_1, X_2, \dots, X_p]$ with $Z = [Z_1, Z_2, \dots, Z_p]$, which are uncorrelated, so the regression model $y = Z\beta + \epsilon$ does not suffer from multicollinearity.
+In PCR, we try to provide a weighted linear combination of the predictors ($X_i$s) like: $$Z_k = v_{k1}X_1 + v_{k2}X_2 + \dots + v_{kp}X_p$$ We then replace the correlated variables $[X_1, X_2, \dots, X_p]$ with $Z = [Z_1, Z_2, \dots, Z_p]$ which are uncorrelated, so the regression model $y = Z\beta_z + \epsilon$ does not suffer from multicollinearity.
 
-First, we need to centralize and normalize all the variables for PCR. In the following, we assume the variables are all centralized and normalized and show how to find the $Z$ matrix.
+First, we need to centralize and normalize all the variables for PCR. In the following, we assume the $y$ and $X$ variables are all centralized and normalized and show how to find the $Z$ matrix.
 
+$$\text{Correlated: $X=[X_1, X_2, \dots, X_p]$ $\xrightarrow{\text{PC Analysis}}$ Uncorrelated: $Z=[Z_1, Z_2, \dots, Z_p]$}$$
 
-Correlated $X=[X_1, X_2, \dots, X_p]$ $\rightarrow$ Uncorrelated $Z=[Z_1, Z_2, \dots, Z_p]$
-
-We call each $Z_i$ a **principal component**.
-
-
+We call $Z_i$ the i-th **principal component** of matrix $X$.
 
 In ordinary least squares,
 
-$$\hat{\beta}=\left( X'X \right)^{-1}X'y$$
+$$\hat{\beta_x}=\left( X'X \right)^{-1}X'y$$
 
+We perform PCA on matrix $X$ through singular value decomposition. We obtain $$UDV'=X$$ $U$ is the left singular vectors matrix, $D$ is a diagonal matrix consisting of non-negative singular values, and $V$ is the matrix of the right singular vectors matrix (eigenvectors matrix). We calculate matrix $$Z=XV$$
 
-We perform PCA on matrix $X$ through singular value decomposition. This way we obtain $$X=UDV'$$ 
-$D$ is a diagonal matrix consisting of
- non-negative singular values, and $V$ is the matrix of the eigenvectors. we calculate matrix $$Z=XV$$
+The columns of $Z$ are linearly independent. If we define
 
-The columns of $Z$ are linearly independent.
-if we define
+$$\hat{\beta_z}=\left( Z'Z \right)^{-1}Z'y$$ then:
 
-$$\hat{\beta_z}=\left( Z'Z \right)^{-1}Z'y$$ 
-then:
+$$\hat{y}=X\hat{\beta_x}=Z\hat{\beta_z}$$ So, We have the regression model $y = Z\beta_z + \epsilon$ without multilinearity, but gives the same predictions of the intial model $y = X\beta_x + \epsilon$.
 
-$$\hat{y}=X\hat{\beta_x}=Z\hat{\beta_z}$$
-
-### Principal component Matrix, $Z$, for our data.
+### Principal component Matrix $Z$, for our data.
 
 ```{r}
 x.pca1 <- prcomp(x.norm)
 z <- x.pca1$x
 head(z)
 ```
+
 ### Principal components are uncorrolated:
 
-
-
 ```{r}
+#| label: fig-cor-pc
+#| fig-cap: Correlation plot for 15 Principal Components (Columns of the matrix Z)
 res_zz <- cor(z, method="pearson")
 library(corrplot)
 corrplot(res_zz, method = 'ellipse', order = 'AOE', type = 'upper')
 ```
 
+One question is: after converting the matrix 
+$X$ to $Z$, how much of the information (variance) from the original matrix $X$ does the principal component matrix $Z$ retain?
 
 ```{r}
 variation <- 100*cbind(x.pca1$sdev/sum(x.pca1$sdev),rep(0    ,15),cumsum(x.pca1$sdev)/sum(x.pca1$sdev))
-colnames(variation) <- c("% of variation","   ","cumulative % of variation")
+colnames(variation) <- c("Var(%)","   ","CumVar(%)")
 rownames(variation) <- c("PC1","PC2","PC3","PC4","PC5","PC6","PC7","PC8","PC9","PC10","PC11","PC12","PC13","PC14","PC15")
-round(variation,1)
+round(variation[,c(1,3)],1)
 ```
 
-The first principal component ($PC_1$) only accounts $27$% of the variation (information) of $X$ matrix, the first two principal components ($PC_1$ and $PC_2$) account $30$% of the $X$ matrix and so on. All the principal components matrix,$Z=[PC_1, PC_2,\dots,PC_{15}]$, account $100$% of the variation of of the $X$ matrix.
-
+The first principal component ($PC_1$) only accounts $27$% of the variation (information) of $X$ matrix, the first two principal components ($PC_1$ and $PC_2$) account $30$% of the $X$ matrix variation and so on. All the principal components matrix,$Z=[PC_1, PC_2,\dots,PC_{15}]$, account $100$% of the variation of of the $X$ matrix.
 
 ```{r}
+#| label: fig-scree
+#| fig-cap: The scree plot show the cumulative variance explained by principal components.
 p <- ncol(x.norm)
 PVE <- rep(NA,p)
 for(i in 1:15){ PVE[i]<- variation[i,3] }
@@ -113,9 +114,9 @@ barplot( PVE, names.arg = 1:p, main = "scree plot",
          ylab = "% of variance explained" )
 ```
 
-
-
 ### Full PCR Model
+
+In the following we have fitted the Principal Component Regression model ($\hat{y} = Z\hat{\beta_z}$) for our data.
 
 ```{r}
 data_pcr <- data.frame(cbind(z,mort.norm))
@@ -129,8 +130,7 @@ This model has exactly the same prediction values, residual sum of squares, and 
 
 The principal components with significant effects in the full model are:
 
-$$PC_1, PC_3, PC_6, PC_7, PC_9, PC_{12}$$
-These subsets of the principal components account for `{r} round(sum(variation[c(1,3,6,7,9,12),1]))`% of the variation in the original predictors ($X_i$s). We may say that the other 49% of the variation is not significantly related to the response variable.
+$$PC_1, PC_3, PC_6, PC_7, PC_9, PC_{12}$$ These subsets of the principal components account for `{r} round(sum(variation[c(1,3,6,7,9,12),1]))`% of the variation in the original predictors ($X_i$s). We may say that the other 49% of the variation is not significantly related to the response variable.
 
 So the reduced model is:
 
@@ -139,40 +139,52 @@ reduced_pcr <- lm(mort.norm ~PC1+PC3+PC6+PC7+PC9+PC12,data=data_pcr)
 summary(reduced_pcr)
 ```
 
-
-$$\hat{y}= 0.251PC_1-0.319PC_3+0.339PC_6 -0.279PC_7+0.3PC_9+0.470PC_{12} $$
-We know each PC is a linear combination of all the original predictors, as follow:
+$$\hat{MORT}= 0.251PC_1-0.319PC_3+0.339PC_6 -0.279PC_7+0.3PC_9+0.470PC_{12} $$ We know each PC is a linear combination of all the original predictors, as follow:
 
 ```{r}
 v<- x.pca1$rotation[,c(1,3,6,7,9,12)]
 v
 ```
 
-
 ### Model Assumption for PCR
 
 ```{r}
-plot(reduced_pcr$fitted.values,reduced_pcr$residuals)
-hist(reduced_pcr$residuals,breaks=13)
-qqnorm(reduced_pcr$residuals)
- qqline(reduced_pcr$residuals)
- shapiro.test(reduced_pcr$residuals)
+#| label: fig-residual-ey
+#| fig-cap: Residual versus fitted values of reduced PCR model
+plot(reduced_pcr$fitted.values,reduced_pcr$residuals, xlab = "fitted values for reduced PCR model", ylab = "residuals of the reduced PCR model")
+abline(h=0,lty=2,col="blue")
 ```
-It seems the residuals of the reduced PCR model does not violate the assumptions.
 
+```{r}
+#| label: fig-hist-pcr
+#| fig-cap: Histogram for the residuals of the reduced PCR model
+hist(reduced_pcr$residuals,breaks=13,xlab = "residuals of the reduced PCR model")
+```
+
+```{r}
+#| label: fig-qq-pcr
+#| fig-cap: Normal Q-Q plot for the residuals of the reduced PCR model
+qqnorm(reduced_pcr$residuals)
+qqline(reduced_pcr$residuals)
+shapiro.test(reduced_pcr$residuals)
+```
+
+
+It seems the residuals of the reduced PCR model does not violate the assumptions.
 
 ### Final PCR Model in Terms of the Original Predictors
 
+The reduced model meets all the model assumptions and we consider it as the final PCR model.
 
+we can also rewrite the model in terms of the original predictors:
 
-So we can rewrite the reduced model in terms of the original predictors:
+$$\hat{\beta_x}=V\hat{\beta_z}$$ where V is the vector of selected eigenvectors corresponding to selected principal components($[PC_1, PC_3, PC_6, PC_7, PC_9, PC_{12}]$)
 
-$$\hat{\beta_x}=V\hat{\beta_z}$$
-where V is the vector of selected eigenvectors corresponding to selected principal components($[PC_1, PC_3, PC_6, PC_7, PC_9, PC_{12}]$)
 ```{r}
 beta_x <- as.matrix(v)%*%as.matrix(reduced_pcr$coefficients)[-1,]
 beta_x
 ```
+
 $$
 \begin{align}
 \hat{MORT}&=0.224(PREC)-0.275(JANT)-0.134(JULT)+0.032(OVR65)-0.008(POPN)\\
@@ -180,10 +192,5 @@ $$
 &+0.014(POOR)+0.003(HC)+0.012(NO_x)+0149(SO_2)+0.085(HUMID)
 \end{align}
 $$
-For this model $R^2=0.712$ which is 14% larger than the corresponding Ridge model (with k=0.2). The Residual Sum of Squared for this model is 0.287 which is slightly larger than the Residual Sum of Squared for the Ridge model.
 
-
-
-
-
-
+For this model $R^2=0.712$ which is 14% larger (better) than the corresponding Ridge model (with k=0.2). In terms of residual sum of squared, the ridge model slightly works better than PCR. The residual sum of squared for PCR model is $\phi^*=0.287$ , which is slightly larger than the residual sum of squares for the Ridge model. The coefficients estimated for predictors are not much different from the corresponding ones in the Ridge model, except for OVR65, WWDRK, and HC, which have different signs in the two models. For OVR65 and HC, the difference in sign may not be a concern, as the estimated coefficients for these two predictors in both models are close to zero and do not significantly affect the models. However, for WWDRK, the PCR model considers that WWDRK has a positive moderate effect on mortality, while the Ridge model considers a negligible effect of -0.034.

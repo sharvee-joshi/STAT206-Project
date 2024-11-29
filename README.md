@@ -2,9 +2,15 @@
 
 ## Overview
 
-This project replicates the analyses conducted in the article "Instabilities of Regression Estimates Relating Air Pollution to Mortality". The original study examines the sensitivity of regression-based estimates when analyzing the relationship between air pollution and mortality, highlighting challenges in model specification and stability.
+This project replicates and extends the analyses presented in the article "Instabilities of Regression
+Estimates Relating Air Pollution to Mortality". The original study investigates the sensitivity of
+regression-based estimates when analyzing the relationship between air pollution and mortality,
+focusing on the challenges of model specification and the stability of the results.
 
-The purpose of this project is to reproduce the results from the paper, assess the robustness of the methods used, and provide insights into the factors contributing to the observed instabilities in regression estimates.
+The goal of this project is to reproduce the findings from the paper while incorporating modern
+techniques and fitting our own alternative model. Additionally, we aim to assess the robustness of
+the methods used, and provide deeper insights into the factors
+that contribute to the observed instabilities in regression estimates.
 
 ## Contents
 The repository contains the following components:

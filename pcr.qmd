@@ -38,8 +38,6 @@ library(corrplot)
 ```{r}
 #| label: fig-corr-xx
 #| fig-cap: Correlation plot for 15 predictors of the data set
-#| fig-width: 8
-#| fig-height: 8
 corrplot(res_xx, method = 'ellipse', order = 'AOE', type = 'upper')
 ```
 

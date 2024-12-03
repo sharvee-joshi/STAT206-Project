@@ -29,13 +29,29 @@ The purpose of this report is to replicate the analyses that were conducted in t
 
 # Methodology From Author
 
-## Data Description
+In the article, *"Instabilities of Regression Estimates Relating Air Pollution to Mortality"*, the author uses multiple linear regression, or the ordinary least squares, as their initial model. The initial, or full model presented was:
+$$
+Y = X \underline{\beta} + \underline{\epsilon}
+$$
+where $Y$ represents the response variable which is the mortality rate collected between 1959 to 1961. $X$ represents a matrix of predictors, and $\underline{\beta}$ are the regression coefficients from the full model. 
 
-## Regression Models
+The full model was then used to estimate the association between the mortality rates and given predictors, as well as identify any instabilities in the coefficients caused by high multicollinearity. A common pattern seen in this paper is the high multicollinearity found between the predictors, especially in hydrocarbon, nitrogen oxides, and sulfer dioxides. These gases in particular happened to be highly correlated with one another. 
+
+In order to address the multicollinearity, the author turns to two different methods: Ridge Regression and Variable Selection via Mallows' $C_p$ Criterion. The author first uses ridge regression by adding a penalty term to the Ordinary Least Squares objective function that looks like:
+$$
+\beta^* = argmin(||Y - X\beta||^2 + k||\beta||^2)
+$$
+In this case, we see the penalty term, or $k||\beta||^2$, will shrink the coefficients, which will result in a reduction of variance at the trade off of introducing slight bias. However, this will also result in the estimates stabilizing. The author also uses ridge trace to visualize these changes as the penalty term increases.
+
+Finally, the author goes onto to use Variable Selection to compare the reduced models by using Mallows' $C_p$ Criterion and the Ridge Trace Analysis. In order to compare all the models, the author then uses the residual sum of squares, the coefficient of determination, $R^2$, and the how stable the coefficients were via ridge trace analysis. 
+
+## Data Description
 
 ## Assumptions
 
 ## Reproduction Plan
+
+Our plan to recreate the author's intentions was simple: redo all of the models using the exact methods the author used, only using modern technology like R. We divided up the tasks fairly between the teammates, making sure each one of us was tasked with researching and implementing a different model. We chose to stick with the original use of Ridge Regression and Mallows' $C_p$ Criterion, however, we expanded to using Principle Component Analysis as well as the Akaike's Criterion to see if there would be any sort of deviations from the paper that could be explained. The next part of the report shows, in detail, the steps we took. 
 
 # Implementation
 
@@ -45,11 +61,22 @@ The purpose of this report is to replicate the analyses that were conducted in t
 # pulling the data
 library("bestglm")
 data <- mcdonald
-
 head(data)
 ```
+
 ```{r}
-#Distribution of respose variable
+# in order to replicate the paper, we need to centralize and standardize the data before we continue
+data.norm <- data
+for(i in 1:ncol(data)){
+  data.norm[,i] <- data[,i]-mean(data[,i])
+  data.norm[,i] <- data.norm[,i]/sqrt(sum((data.norm[,i])^2))
+}
+```
+
+
+
+```{r}
+#Distribution of response variable
 #install.packages("ggplot2")
 library(ggplot2)
 ggplot(data, aes(x = MORT)) +
@@ -101,32 +128,13 @@ ggarrange(
   hc,nox,so2
 )
 ```
-```{r}
-# correlation heat map
-library(reshape2)
-
-# Calculate correlation matrix
-cor_matrix <- cor(data)
-cor_data <- melt(cor_matrix)
-
-# Heatmap
-ggplot(cor_data, aes(Var1, Var2, fill = value)) +
-  geom_tile(color = "white") +
-  scale_fill_gradient2(
-    low = "blue", high = "red", mid = "white",
-    midpoint = 0, limit = c(-1, 1)
-  ) +
-  labs(title = "Correlation Heatmap", x = "", y = "") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-```
 
 
 
-
-## Multiple Linear Regression
+## The Full Model
 ```{r}
 #first full model
-ols_model <- lm(MORT ~., data = data)
+ols_model <- lm(MORT ~., data = data.norm)
 summary(ols_model)
 ```
 ```{r}
@@ -144,6 +152,10 @@ ggplot(data = data.frame(
   theme_minimal()
 ```
 
+## Ridge Regression
+
+
+## Variable Selection
 
 ### Mallow's $C_p$
 
@@ -153,10 +165,56 @@ ggplot(data = data.frame(
 library(ggplot2)  # For plotting
 library(leaps)    # For all subset regression
 
-# str(data)
+#separating the data for response and predictors
+response <- data.norm$MORT
+predictors <- setdiff(names(data.norm),response)
+
+#Step 1: use subsets regression to perform cp mallows calculations
+subs_reg <- regsubsets(response ~ ., data = data.norm, nvmax = length(predictors))
+subsets_summary <- summary(subs_reg)
+
+#Step 2: get mallows cp and determined number of preds
+cp_dat <- data.frame(num_pred = 1:length(subsets_summary$cp), cp = subsets_summary$cp)
+
+#Step 3: use ggplot to visualize this
+ggplot(cp_dat, aes(x = num_pred, y = cp)) +
+  geom_point() +
+  geom_line() +
+  geom_point(data = cp_dat[which.min(cp_dat$cp), ], aes(x = num_pred, y = cp),
+             color = "red", size = 3) +
+  labs(
+    title = "Mallows' Cp Plot for McDonald Data",
+    x = "Number of Predictors",
+    y = "Mallows' Cp"
+  ) +
+  theme_minimal()
+
+```
+```{r}
+#Step 1: find out the optimal number of coefficients according to CP, then use that to create a variable for the predictors
+min_cp_index <- which.min(subsets_summary$cp)
+best_predictors <- names(coef(subs_reg, id = min_cp_index))
+best_predictors <- best_predictors[best_predictors != "(Intercept)"]
+
+# Step 2: create our reduced model formula using the above predictors
+red_cp_formula <- as.formula(paste("MORT ~", paste(best_predictors, collapse = " + ")))
+
+# Step 3: fit reduced model using normalized data and spit out summary
+red_cp_model <- lm(red_cp_formula, data = data.norm)
+summary(red_cp_model)
+```
+
+
+```{r}
+#compare to full model - OLS model
+
+cat("AIC of full model:", AIC(ols_model), "\n")
+cat("AIC of reduced model using Mallow's:", AIC(red_cp_model), "\n")
 
 ```
 
+
+### Akaike's Information Criterion
 
 ```{r}
 #subset the modeling using stepAIC, or the Akaike Information Criterion
@@ -164,13 +222,7 @@ library(MASS)
 ols_aic <- stepAIC(ols_model, direction = "both", trace = FALSE)
 summary(ols_aic)
 ```
-```{r}
-# get the AIC for Cp Mallows then compare with stepAIC, full, and CP Mallows
 
-```
-Mallow's C_p performs slightly better 
-
-## Ridge Regression
 
 ## Principal Component Regression (PCR)
 
@@ -392,4 +444,4 @@ For this model $R^2=0.712$ which is 14% larger (better) than the corresponding R
 
 ## Acknowledgements
 
-# References
+We'd like to first start off by thanking Dr. Landeros for the opportunity to recreate an article as profound as this one... add on here

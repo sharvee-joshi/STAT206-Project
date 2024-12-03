@@ -52,104 +52,6 @@ plot(fit.ols)
 plot(fit.ridge)
 ```
 
-
-Maybe consider this instead
-
-```{r}
-#Standardize the predictors
-predictors <- scale(mcdonald[, -which(names(mcdonald) == "MORT")])
-response <- mcdonald$MORT
-
-#OLS Regression
-ols_model <- lm(MORT ~ ., data = mcdonald)
-summary(ols_model)
-
-#ridge regression
-lambda_seq <- 10^seq(10, -2, length = 100)
-ridge_cv <- cv.glmnet(predictors, response, alpha = 0, lambda = lambda_seq)
-opt_lambda <- ridge_cv$lambda.min
-cat("Optimal Lambda from Ridge:", opt_lambda, "\n")
-
-# Refit ridge with the optimal lambda
-ridge_model <- glmnet(predictors, response, alpha = 0, lambda = opt_lambda)
-ridge_coefs <- as.data.frame(as.matrix(coef(ridge_model)))
-print(ridge_coefs)
-
-#PCR
-pcr_model <- pcr(MORT ~ ., data = data, scale = TRUE, validation = "CV")
-summary(pcr_model)
-
-#Compare models and predictions
-ridge_preds <- predict(ridge_model, newx = predictors)
-ols_preds <- predict(ols_model, newdata = data)
-
-# Residual Analysis
-par(mfrow = c(1, 2))
-plot(response, ridge_preds, main = "Ridge: Observed vs Predicted", xlab = "Observed", ylab = "Predicted")
-abline(0, 1)
-plot(response, ols_preds, main = "OLS: Observed vs Predicted", xlab = "Observed", ylab = "Predicted")
-abline(0, 1)
-
-#address multicollinearity
-library(car)
-vif_values <- vif(ols_model)
-cat("VIF for OLS:\n")
-print(vif_values)
-
-#check for improvements
-ridge_vif <- 1 / (1 - ridge_cv$cvm[which.min(ridge_cv$cvm)])
-cat("Approx. Ridge VIF:\n", ridge_vif)
-
-#Refit Ridge 
-#Optionally, choose a reduced set of principal components
-pcr_components <- 9 
-pcr_preds <- predict(pcr_model, ncomp = pcr_components, newdata = data)
-plot(response, pcr_preds, main = "PCR: Observed vs Predicted", xlab = "Observed", ylab = "Predicted")
-abline(0, 1)
-
-```
-
-```{r}
-#Compute VIF for OLS
-library(car)
-vif_ols <- vif(ols_model)
-cat("VIF for OLS:\n")
-print(vif_ols)
-
-#Approximate "Ridge VIF" 
-ridge_vif <- 1 / (1 - ridge_cv$cvm[which.min(ridge_cv$cvm)])
-cat("Approximate VIF for Ridge:\n", ridge_vif)
-
-#Compare Coefficients
-ols_coefs <- coef(ols_model)[-1]  
-ridge_coefs_opt <- as.vector(coef(ridge_model))[-1]  #
-coef_comparison <- data.frame(
-  Variable = names(ols_coefs),
-  OLS_Coefficients = ols_coefs,
-  Ridge_Coefficients = ridge_coefs_opt
-)
-print(coef_comparison)
-```
-
-
-```{r}
-
-ols_preds <- predict(ols_model, newdata = data)
-ridge_preds <- predict(final_ridge_model, newx = predictors)
-ols_mse <- mean((response - ols_preds)^2)
-ridge_mse <- mean((response - ridge_preds)^2)
-cat("OLS MSE:", ols_mse, "\nRidge MSE:", ridge_mse, "\n")
-
-
-```
-
-Let't take a look at the multicollinearity
-
-```{r}
-cor_matrix <- cor(mcdonald[, -which(names(mcdonald) == "MORT")])
-heatmap(cor_matrix, symm = TRUE, main = "Correlation Heatmap")
-```
-
 Compile and make it efficient
 Step 1
 ```{r}
@@ -164,6 +66,7 @@ Step 2: Optimal Lambda
 ridge_cv <- cv.glmnet(predictors, response, alpha = 0)
 opt_lambda <- ridge_cv$lambda.min
 cat("Optimal Lambda:", opt_lambda, "\n")
+
 ```
 
 Step 3: Fit Ridge Model 
@@ -179,7 +82,7 @@ print(ridge_coefs)
 
 ```
 
-Step 4: Compare OLS and Ridge Coeffiecients
+Step 4: Compare OLS and Ridge Coefficients
 
 ```{r}
 ols_model <- lm(MORT ~ ., data = mcdonald)
@@ -251,6 +154,10 @@ ridge_rmse <- sqrt(mean((ridge_preds - response)^2))
 rmse_df <- data.frame(Model = c("OLS", "Ridge"), RMSE = c(ols_rmse, ridge_rmse))
 print(rmse_df)
 
+plot(ols_preds)
+plot(ols_rmse)
+
+plot(ridge_cv)
 ```
 
 Step 8: Ridge Trace Plot
@@ -289,18 +196,6 @@ barplot(
   col = "skyblue",
   cex.names = 0.8                      # Adjust label size
 )
-
-```
-
-```{r}
-# Check if glmnet standardized the data
-print(ridge_model$beta) # Standardized coefficients for each lambda
-
-# Retrieve optimal lambda
-print(opt_lambda)
-
-# Recalculate Ridge model if needed with standardized = FALSE (to test)
-ridge_model_no_standard <- glmnet(predictors, response, alpha = 0, standardize = FALSE)
 
 ```
 

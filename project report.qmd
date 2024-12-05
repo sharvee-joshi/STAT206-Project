@@ -25,7 +25,6 @@ One example is seen in the article titled: *"Instabilities of Regression Estimat
 
 The purpose of this report is to replicate the analyses that were conducted in the original study, using techniques that we have discussed in this class, as well as the use of modern technology. An important note is that the article was written in the 1970s, and the data and statistical methods were most likely conducted during that time. We are aware of the advanced technology we have now, and we hope to compare our output versus the original output, and perhaps observe better results. We also hope to learn more about statistical modeling as well as contribute to a better understanding of how methodologies change over time. Finally, we hope to truly understand and do our best to interpret the relationship between air pollution and mortality rates.
 
-# Literature Review
 
 # Methodology From Author
 
@@ -46,6 +45,8 @@ In this case, we see the penalty term, or $k||\beta||^2$, will shrink the coeffi
 Finally, the author goes onto to use Variable Selection to compare the reduced models by using Mallows' $C_p$ Criterion and the Ridge Trace Analysis. In order to compare all the models, the author then uses the residual sum of squares, the coefficient of determination, $R^2$, and the how stable the coefficients were via ridge trace analysis. 
 
 ## Data Description
+
+
 
 ## Assumptions
 
@@ -167,32 +168,52 @@ library(leaps)    # For all subset regression
 
 #separating the data for response and predictors
 response <- data.norm$MORT
-predictors <- setdiff(names(data.norm),response)
+predictors <- names(data.norm)[names(data.norm) != "MORT"]
 
 #Step 1: use subsets regression to perform cp mallows calculations
 subs_reg <- regsubsets(response ~ ., data = data.norm, nvmax = length(predictors))
 subsets_summary <- summary(subs_reg)
 
 #Step 2: get mallows cp and determined number of preds
-cp_dat <- data.frame(num_pred = 1:length(subsets_summary$cp), cp = subsets_summary$cp)
+cp_dat <- data.frame(num_pred = 1:length(subsets_summary$cp) - 1, cp = subsets_summary$cp)
 
-#Step 3: use ggplot to visualize this
+#Step 3: create two new variables: the number of parameters plus the intercept, and then the difference between the cp value and the parameter variable. We want to pick the model that will have the number of predictors be very close to the CP value
+cp_dat$parameters <- cp_dat$num_pred + 1 # Include the intercept
+cp_dat$cp_diff <- abs(cp_dat$cp - cp_dat$parameters) # Difference between Cp and p
+best_cp_row <- cp_dat[which.min(cp_dat$cp_diff), ] # Row with the best match
+
+# Step 4: Visualize Mallows' Cp
 ggplot(cp_dat, aes(x = num_pred, y = cp)) +
-  geom_point() +
-  geom_line() +
-  geom_point(data = cp_dat[which.min(cp_dat$cp), ], aes(x = num_pred, y = cp),
-             color = "red", size = 3) +
+  geom_point() +  # Plot all points
+  geom_line() +   # Connect points with a line
+  geom_point(data = best_cp_row, aes(x = num_pred, y = cp),
+             color = "red", size = 3) +  # Highlight the desired point
   labs(
-    title = "Mallows' Cp Plot for McDonald Data",
+    title = paste("Mallows' Cp Plot (Highlighting 15 Predictors"),
     x = "Number of Predictors",
     y = "Mallows' Cp"
   ) +
   theme_minimal()
 
+
 ```
 ```{r}
+library(knitr)
+
+# Step 3: Sort by Difference
+cp_table <- cp_dat[order(cp_dat$cp_diff), ] # Sort by smallest difference
+
+# Step 4: Display Table
+kable(cp_table, col.names = c(
+  "Number of Predictors", "Mallows' Cp", "Parameters (p+1)", "Difference (|Cp - Parameters|)"
+), caption = "Mallows' Cp Table with Differences", format = "html") # Adjust format if not in markdown
+
+```
+
+
+```{r}
 #Step 1: find out the optimal number of coefficients according to CP, then use that to create a variable for the predictors
-min_cp_index <- which.min(subsets_summary$cp)
+min_cp_index <- which.min(cp_dat$cp_diff)
 best_predictors <- names(coef(subs_reg, id = min_cp_index))
 best_predictors <- best_predictors[best_predictors != "(Intercept)"]
 
@@ -203,6 +224,29 @@ red_cp_formula <- as.formula(paste("MORT ~", paste(best_predictors, collapse = "
 red_cp_model <- lm(red_cp_formula, data = data.norm)
 summary(red_cp_model)
 ```
+```{r}
+#checking the residuals for the reduced CP Model
+ggplot(data = data.frame(
+  residuals = residuals(red_cp_model),
+  fitted = fitted(red_cp_model)
+), aes(x = fitted, y = residuals)) +
+  geom_point() +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  labs(
+    title = "Residuals vs. Fitted Values",
+    x = "Fitted Values",
+    y = "Residuals"
+  ) +
+  theme_minimal()
+```
+```{r}
+qqnorm(red_cp_model$residuals)
+qqline(red_cp_model$residuals)
+
+shapiro.test(red_cp_model$residuals)
+```
+Analysis here
+
 
 
 ```{r}
@@ -222,7 +266,6 @@ library(MASS)
 ols_aic <- stepAIC(ols_model, direction = "both", trace = FALSE)
 summary(ols_aic)
 ```
-
 
 ## Principal Component Regression (PCR)
 

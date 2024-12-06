@@ -154,7 +154,86 @@ ggplot(data = data.frame(
 ```
 
 ## Ridge Regression
+## Ridge Regression
+Step 1: Find the Optimal Lambda 
 
+```{r}
+library(MASS)
+library(glmnet)
+
+Y <- data.norm$MORT
+X <- as.matrix(data.norm[ , !names(data.norm) %in% "MORT"])
+
+
+#Cross-Validation
+cv_ridge <- cv.glmnet(X, Y, alpha = 0) 
+optimal_lambda <- cv_ridge$lambda.min
+
+optimal_lambda
+```
+
+Step 2: Fit Ridge Regression Model
+```{r}
+ridge_model <- glmnet(X, Y, alpha = 0, lambda = optimal_lambda)
+
+ridge_coefficients <- coef(ridge_model)
+
+ridge_coefficients
+
+```
+
+Step 3: Compare OLS and Ridge Coefficients
+
+```{r}
+library(knitr)
+library(kableExtra)
+ols_coefficients <- coef(ols_model)
+
+# Compare 
+comparison <- data.frame(
+  Variable = rownames(ridge_coefficients),
+  OLS = as.numeric(ols_coefficients),
+  Ridge = as.numeric(ridge_coefficients)
+)
+
+#print(comparison)
+kable(comparison, theme = "Minimal") 
+
+```
+Step 4: Multicollinearity Analysis
+```{r}
+#Find VIF
+library(car)
+vif_values <- vif(ols_model)
+
+#put in appendix
+kable(vif_values)
+plot(vif_values)
+```
+
+Step 5: OLS Correlation Heatmap
+
+```{r}
+cor_matrix <- cor(data.norm)
+
+ols_cor <- cor(X)
+heatmap(ols_cor, symm = TRUE, main = "OLS Correlation Heatmap")
+```
+
+Step 6: Predictive Accuracy
+
+```{r}
+ols_predictions <- predict(ols_model, data.norm)
+
+ridge_predictions <- predict(ridge_model, s = optimal_lambda, newx = X)
+
+#Find MSE
+ols_mse <- mean((Y - ols_predictions)^2)
+ridge_mse <- mean((Y - ridge_predictions)^2)
+
+#data.frame(Method = c("OLS", "Ridge"), MSE = c(ols_mse, ridge_mse))
+kable(data.frame(Method = c("OLS", "Ridge"), MSE = c(ols_mse, ridge_mse)))
+```
 
 ## Variable Selection
 

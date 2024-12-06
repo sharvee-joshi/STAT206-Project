@@ -154,7 +154,7 @@ ggplot(data = data.frame(
 ```
 
 ## Ridge Regression
-## Ridge Regression
+
 Step 1: Find the Optimal Lambda 
 
 ```{r}

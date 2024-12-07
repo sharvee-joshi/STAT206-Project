@@ -200,7 +200,7 @@ qqnorm(ols_model$residuals)
 qqline(ols_model$residuals)
 shapiro.test(ols_model$residuals)
 ```
-Based off of the residuals plot, we do not see any patterns present. Moving onto the qq-plot, we do some slight curvature towards the end of the line, maybe indicating that the addition of a squared value in the predictors could be useful. The Shapiro Wilks test is satisfied, so our assumptions are met, with some deviation in the linear aspect.
+Based off of the residuals plot, we do not see any patterns present. Moving onto the qq-plot, we do some slight curvature towards the end of the line, maybe indicating that the addition of a squared value in the predictors could be useful. The Shapiro Wilk's test is satisfied, so our assumptions are met, with some deviation in the linear aspect.
 
 ## Ridge Regression
 
@@ -265,6 +265,14 @@ kable(data.frame(Method = c("OLS", "Ridge"), MSE = c(ols_mse, ridge_mse)))
 
 ### Mallow's $C_p$
 
+In order to start the process of eliminating variables, the author introduces Mallows' $C_p$. This statistics estimates the sum of squared biases plus the squared random errors in the response variable at all the data points. The statistic is calculated using:
+$$
+C_p = \dfrac{RSS_p}{\hat{\sigma^2}} - (n- 2p)
+$$
+Note, that $p$ is equal to the number of parameters, which includes the response variable. $RSS_p$ is the residual sum of squares for a particular regression being considered, and $\hat{\sigma^2$ is the MSE value, or the mean square value of the given regression. 
+
+The author goes into length about how he was able to calculate the statistic by using a certain algorithm described in *Technometrics*, an article written by LaMotte and Hocking. This algorithm, from the sounds of it, takes over 32,000 total possible regression and looks at the best equations from these. His result was that they found approximately 4.5% of the 32,000 possibilities to yield a low $C_p$ value. Using modern technology, this algorithm is automatically implemented for us by using the function `regsubsets`. By using this function, we're able to quickly fish through the different $C_p$ values and find the best fitting model. Essentially, we would like to find a $C_p$ value that is close to the given number of parameters for that model. For example, the paper notes that their minimum $C_p$ value was 3.55, so they picked the model with the "best" set of five variables. Using this idea, we construct our own $C_p$ and conduct a test.
+
 ```{r}
 #plotting mallow's Cp
 
@@ -302,6 +310,8 @@ ggplot(cp_dat, aes(x = num_pred, y = cp)) +
 
 
 ```
+In the plot above, I've constructed a simple plot that will show us what number of predictors is ideal according to Mallows' $C_p$. I determined the absolute difference between the $C_p$ value and the number of parameters, making sure to take into account the intercept. The algorithm was then able to spit out the most ideal value, and tell us what model we should use that has the right number of predictors. As we can see above, we want to use a model that has 13 predictor values, that does not include our intercept.
+
 ```{r}
 library(knitr)
 
@@ -315,7 +325,7 @@ kable(cp_table, col.names = c(
 
 ```
 
-Test Test Test
+The table above shows us first, the number of predictors in a given model, the $C_p$ value for that model, the number of parameters that would be in the model, as in including the intercept, and then finally, the absolute value for the difference of the statistic value and the number of parameters. We can see that the best model will be one that has 14 parameters in total, or 13 predictor variables and 1 intercept variable. That is because the difference value is the smallest. Thus, we can move on to determining which model this is and looking at the analysis of it.
 
 
 ```{r}
@@ -331,6 +341,11 @@ red_cp_formula <- as.formula(paste("MORT ~", paste(best_predictors, collapse = "
 red_cp_model <- lm(red_cp_formula, data = data.norm)
 summary(red_cp_model)
 ```
+We have now calculated our reduced model. In this case, the Mallows' $C_p$ value decided that the model that was "best" would be one without two predictor variables: the percent employment in white-collar occupations in 1960, or WWDRK, and the percent of families with income under 3,000 dollars in 1960, or POOR. This seems to make sense as in the full model, both these coefficients had low partial t-test p-values, indicating little significance to the model. We also get an $R^2$ value equal to 0.7648, meaning that our reduced model using $C_p$ actually performed better than the authors. This is most likely due to the fact that the author ran 32,000 models of different combinations of predictors, whereas I only ran it on a random model for a given number of predictors. 
+
+Now let's see if our reduced model using Mallows' $C_p$ checks the assumptions.
+
+
 ```{r}
 #checking the residuals for the reduced CP Model
 ggplot(data = data.frame(
@@ -352,6 +367,9 @@ qqline(red_cp_model$residuals)
 
 shapiro.test(red_cp_model$residuals)
 ```
+Our assumptions still appear to be met with the reduced model, so we can move forward to check on the multicollinearity, although there probably won't be much of a difference.
+
+
 ```{r}
 library(reshape2)
 data_reduced <- data.norm[, best_predictors]
@@ -376,9 +394,7 @@ ggplot(cor_data, aes(x = Var1, y = Var2, fill = value)) +
   )
 ```
 
-Analysis here
-
-
+As expected, multicollinearity stayed approximately the same. While the removal of two variables did make the graph slightly better, there still is a good amount of variables present, especially ones that are highly correlated together such as the chemical pollution variables. Finally, we compare the AIC values of the full model versus the reduced model, using Mallows' $C_p$, to see if the reduced model performs better.
 
 ```{r}
 #compare to full model - OLS model
@@ -387,7 +403,7 @@ cat("AIC of full model:", AIC(ols_model), "\n")
 cat("AIC of reduced model using Mallow's:", AIC(red_cp_model), "\n")
 
 ```
-
+Thankfully, it appears that the reduced model is actually performing better than the full model as the AIC value is lower. It does appear as though getting rid of WWDRK and POOR appeared to help the model perform better. While I did deviate from the author's original algorithm for variable selection, I do believe I ran a more efficient code: running through over 32,000 different models to only get a lower performing model did not seem plausible to me, and while my code itself may not be as thourough as the author's, it definitely is more efficient and therefore less computationally intense for someone who would want to recreate this code. 
 
 ## Principal Component Regression (PCR)
 

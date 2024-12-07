@@ -46,13 +46,25 @@ Finally, the author goes onto to use Variable Selection to compare the reduced m
 
 ## Data Description
 
+The first thing we, as a group, had to do was standardize the data, much like the original authors. This is due to a multitude of reasons. The first reason was because all of the predictors had different scales. Variables like $NO_x$ levels had a different scale compared to variables like population density and education level. One variable was measured in parts per million where as another variable was measured by raw counts. Thus, it made sense to standardize the variables to make sure they were on the same scale, which would prevent any predictors with larger absolute values from dominating the regression model. 
 
+Standardizing the data also allowed for an improvement in performance of variable selection. One thing we did differently from the author was used the standardized data on Mallows' $C_p$.
+
+::: callout
+"In our computations, we used as input the raw data, i.e. our regression model for this part of the analysis was not standardized, and so a constant term is counted as a parameter"
+:::
+
+The author does not exactly explain the thought process behind this, but better results were seen when using the standardized data on Mallows' $C_p$.
+
+By standardizing the data, we were also able to slightly reduce multicollinearity. While this is a major problem we face with the data, standardizing it helped mitigate the problem.
+
+Finally, we standardized the data, simply because that's what the author did. We are trying our best to first recreate the analysis the author did, hence, it only made sense to follow his outline, and then diverge with our own results. 
 
 ## Assumptions
 
 ## Reproduction Plan
 
-Our plan to recreate the author's intentions was simple: redo all of the models using the exact methods the author used, only using modern technology like R. We divided up the tasks fairly between the teammates, making sure each one of us was tasked with researching and implementing a different model. We chose to stick with the original use of Ridge Regression and Mallows' $C_p$ Criterion, however, we expanded to using Principle Component Analysis as well as the Akaike's Criterion to see if there would be any sort of deviations from the paper that could be explained. The next part of the report shows, in detail, the steps we took. 
+Our plan to recreate the author's intentions was simple: redo all of the models using the exact methods the author used, only using modern technology like R. We divided up the tasks fairly between the teammates, making sure each one of us was tasked with researching and implementing a different model. We chose to stick with the original use of Ridge Regression and Mallows' $C_p$ Criterion, however, we expanded to using Principle Component Analysis to see if there would be any sort of deviations from the paper that could be explained. The next part of the report shows, in detail, the steps we took. 
 
 # Implementation
 
@@ -88,8 +100,13 @@ ggplot(data, aes(x = MORT)) +
     y = "Frequency"
   ) +
   theme_minimal()
-```
 
+```
+The author defines the response variable, mortality, as the total age adjusted mortality rate. He uses the following formula to describe the overall mortality rate:
+$$
+MR = (\sum D_i)(\sum (D_i/R_i))^{-1}
+$$
+$D_i$ and $R_i$ represent the death and age adjusted death rates, respectively, for the ith category for $i = 1,2,3,4$. These categories are defined as male white, female white, male non-white, and female non-white. Thus, MR is a collective, or overall mortality rate for the general population from 1959 to 1961. 
 
 
 ```{r}
@@ -99,7 +116,7 @@ hc <- ggplot(data, aes(x = HC, y = MORT)) +
   geom_smooth(method = "lm", se = FALSE, color = "red") +
   labs(
     title = "Mortality vs. Hydrocarbon Pollution",
-    x = "Hydrocarbon Pollution Potential",
+    x = "Hydrocarbon Pollution",
     y = "Mortality"
   ) +
   theme_minimal()
@@ -108,8 +125,8 @@ nox <- ggplot(data, aes(x = NOX, y = MORT)) +
   geom_point(color = "blue") +
   geom_smooth(method = "lm", se = FALSE, color = "red") +
   labs(
-    title = "Mortality vs. NoX Pollution",
-    x = "Hydrocarbon Pollution Potential",
+    title = "Mortality vs. NOx Pollution",
+    x = "NOx Pollution",
     y = "Mortality"
   ) +
   theme_minimal()
@@ -119,7 +136,7 @@ so2 <- ggplot(data, aes(x = SOx, y = MORT)) +
   geom_smooth(method = "lm", se = FALSE, color = "red") +
   labs(
     title = "Mortality vs. SO2 Pollution",
-    x = "Hydrocarbon Pollution Potential",
+    x = "SO2 Pollution",
     y = "Mortality"
   ) +
   theme_minimal()
@@ -129,15 +146,41 @@ ggarrange(
   hc,nox,so2
 )
 ```
+The next graph shows a scatter-plot for each of the chemicals that were collected and comparing them to the mortality rate, or the response. The purpose of this graph was to simply see what each chemical is doing the mortality rate individually. 
 
+Looking at the top left graph, we see Mortality versus Hydrocarbon Pollution. There seems to be a slightly negative slope, indicating a negative correlation between the two. The effect is weak with a large amount of variability, so it's hard to take anything from this. 
+
+In the next graph, we take a look at the mortality rates against the $NO_x$ pollution. The slope line appears to be basically flat, indicating no significant linear relationship b between the two.
+
+Finally, we look at mortality rates versus the $SO_2$ pollution. Here, we see a bit more of a positive slope line appearing, indicating that higher $SO_2$ pollution levels could be associated with increased mortality rates. 
+
+What is interesting to note is that the author himself mentions that using these chemicals in particular would not yield to anything.
+
+::: callout
+"For example $SO_2$ is highly correlated with certain types of particulates and HC is closely tied to carbon monoxide and lead salts. Thus one cannot demonstrate a specific cause and effect even though the analysis quantifies the relationship."
+:::
 
 
 ## The Full Model
+
+As is the case with any sort of Multiple Linear Regression Analysis, the first thing we as statisticians do is create and summarize the results of the full model. Below is the output.
+
 ```{r}
 #first full model
 ols_model <- lm(MORT ~., data = data.norm)
 summary(ols_model)
 ```
+From the output, we see that the model would look something like:
+$$
+\begin{align}
+\hat{MORT}&= 3.375 e^{-17} + 0.3058(PREC)-0.3167(JANT)-0.2374(JULT)- 0.2134(OVR65)-0.2323(POPN)\\
+&-0.2331(EDUC)-0.05382(HOUS)+0.08416(DENS)+0.6396(NONW)-0.01387(WWDRK)\\
+&-0.01121(POOR)-0.9938(HC)+0.9981(NO_x)+0.08789(SO_2)+0.00922(HUMID)
+\end{align}
+$$
+Thankfully, our full model coefficients appear to be exactly the same as the author's, so we are good to move on and take a look at the assumptions.
+
+
 ```{r}
 ggplot(data = data.frame(
   residuals = residuals(ols_model),
@@ -152,85 +195,68 @@ ggplot(data = data.frame(
   ) +
   theme_minimal()
 ```
+```{r}
+qqnorm(ols_model$residuals)
+qqline(ols_model$residuals)
+shapiro.test(ols_model$residuals)
+```
+Based off of the residuals plot, we do not see any patterns present. Moving onto the qq-plot, we do some slight curvature towards the end of the line, maybe indicating that the addition of a squared value in the predictors could be useful. The Shapiro Wilks test is satisfied, so our assumptions are met, with some deviation in the linear aspect.
 
 ## Ridge Regression
 
 Step 1: Find the Optimal Lambda 
-
 ```{r}
 library(MASS)
 library(glmnet)
-
 Y <- data.norm$MORT
 X <- as.matrix(data.norm[ , !names(data.norm) %in% "MORT"])
-
-
 #Cross-Validation
 cv_ridge <- cv.glmnet(X, Y, alpha = 0) 
 optimal_lambda <- cv_ridge$lambda.min
-
 optimal_lambda
 ```
-
 Step 2: Fit Ridge Regression Model
 ```{r}
 ridge_model <- glmnet(X, Y, alpha = 0, lambda = optimal_lambda)
-
 ridge_coefficients <- coef(ridge_model)
-
 ridge_coefficients
-
 ```
-
 Step 3: Compare OLS and Ridge Coefficients
-
 ```{r}
 library(knitr)
 library(kableExtra)
 ols_coefficients <- coef(ols_model)
-
 # Compare 
 comparison <- data.frame(
   Variable = rownames(ridge_coefficients),
   OLS = as.numeric(ols_coefficients),
   Ridge = as.numeric(ridge_coefficients)
 )
-
 #print(comparison)
 kable(comparison, theme = "Minimal") 
-
 ```
 Step 4: Multicollinearity Analysis
 ```{r}
 #Find VIF
 library(car)
 vif_values <- vif(ols_model)
-
 #put in appendix
 kable(vif_values)
 plot(vif_values)
 ```
-
 Step 5: OLS Correlation Heatmap
-
 ```{r}
 cor_matrix <- cor(data.norm)
-
 ols_cor <- cor(X)
 heatmap(ols_cor, symm = TRUE, main = "OLS Correlation Heatmap")
 ```
-
 Step 6: Predictive Accuracy
-
 ```{r}
 ols_predictions <- predict(ols_model, data.norm)
-
 ridge_predictions <- predict(ridge_model, s = optimal_lambda, newx = X)
-
 #Find MSE
 ols_mse <- mean((Y - ols_predictions)^2)
 ridge_mse <- mean((Y - ridge_predictions)^2)
-
 #data.frame(Method = c("OLS", "Ridge"), MSE = c(ols_mse, ridge_mse))
 kable(data.frame(Method = c("OLS", "Ridge"), MSE = c(ols_mse, ridge_mse)))
 ```

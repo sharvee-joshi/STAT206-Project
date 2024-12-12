@@ -82,6 +82,11 @@ head(data)
 ```
 
 ```{r}
+# Summary statistics of the dataset :We first examine the summary statistics of the dataset to understand the overall distribution of the variables, including their mean, median, and range. This helps identify potential issues such as skewness or extreme values that may impact the analysis.
+summary(data)
+```
+
+```{r}
 # in order to replicate the paper, we need to centralize and standardize the data before we continue
 data.norm <- data
 for(i in 1:ncol(data)){
@@ -89,8 +94,6 @@ for(i in 1:ncol(data)){
   data.norm[,i] <- data.norm[,i]/sqrt(sum((data.norm[,i])^2))
 }
 ```
-
-
 
 ```{r}
 #Distribution of response variable
@@ -112,6 +115,22 @@ MR = (\sum D_i)(\sum (D_i/R_i))^{-1}
 $$
 $D_i$ and $R_i$ represent the death and age adjusted death rates, respectively, for the ith category for $i = 1,2,3,4$. These categories are defined as male white, female white, male non-white, and female non-white. Thus, MR is a collective, or overall mortality rate for the general population from 1959 to 1961. 
 
+```{r} 
+# Boxplot 
+library(reshape2)
+boxplot_data <- melt(data)
+ggplot(boxplot_data, aes(x = variable, y = value)) +
+  geom_boxplot(fill = "lightblue", outlier.color = "red") +
+  labs(title = "Boxplot of Variables", x = "Variables", y = "Values") +
+  theme_minimal()
+```
+
+```{r}
+# Correlation heatmap
+library(corrplot)
+cor_matrix <- cor(data, use = "complete.obs") # Handle missing values
+corrplot(cor_matrix, method = "circle", type = "upper", order = "AOE", title = "Correlation Heatmap")
+```
 
 ```{r}
 # Scatterplot: Mortality vs. Pollution Variables

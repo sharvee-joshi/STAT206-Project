@@ -3259,7 +3259,17 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#exploratory-data-analysis" id="toc-exploratory-data-analysis" class="nav-link" data-scroll-target="#exploratory-data-analysis">Exploratory Data Analysis</a></li>
   <li><a href="#the-full-model" id="toc-the-full-model" class="nav-link" data-scroll-target="#the-full-model">The Full Model</a></li>
-  <li><a href="#ridge-regression" id="toc-ridge-regression" class="nav-link" data-scroll-target="#ridge-regression">Ridge Regression</a></li>
+  <li><a href="#ridge-regression" id="toc-ridge-regression" class="nav-link" data-scroll-target="#ridge-regression">Ridge Regression</a>
+  <ul class="collapse">
+  <li><a href="#find-the-optimal-lambda" id="toc-find-the-optimal-lambda" class="nav-link" data-scroll-target="#find-the-optimal-lambda">Find the Optimal Lambda</a></li>
+  <li><a href="#fit-ridge-regression-model" id="toc-fit-ridge-regression-model" class="nav-link" data-scroll-target="#fit-ridge-regression-model">Fit Ridge Regression Model</a></li>
+  <li><a href="#compare-ols-and-ridge-coefficients" id="toc-compare-ols-and-ridge-coefficients" class="nav-link" data-scroll-target="#compare-ols-and-ridge-coefficients">Compare OLS and Ridge Coefficients</a></li>
+  <li><a href="#multicollinearity-analysis" id="toc-multicollinearity-analysis" class="nav-link" data-scroll-target="#multicollinearity-analysis">Multicollinearity Analysis</a></li>
+  <li><a href="#ols-correlation-heatmap" id="toc-ols-correlation-heatmap" class="nav-link" data-scroll-target="#ols-correlation-heatmap">OLS Correlation Heatmap</a></li>
+  <li><a href="#predictive-accuracy" id="toc-predictive-accuracy" class="nav-link" data-scroll-target="#predictive-accuracy">Predictive Accuracy</a></li>
+  <li><a href="#ridge-trace-plot" id="toc-ridge-trace-plot" class="nav-link" data-scroll-target="#ridge-trace-plot">Ridge Trace Plot</a></li>
+  </ul></li>
+  <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation">Interpretation</a></li>
   <li><a href="#variable-selection" id="toc-variable-selection" class="nav-link" data-scroll-target="#variable-selection">Variable Selection</a>
   <ul class="collapse">
   <li><a href="#mallows-c_p-background" id="toc-mallows-c_p-background" class="nav-link" data-scroll-target="#mallows-c_p-background">Mallow’s <span class="math inline">\(C_p\)</span> Background</a></li>
@@ -3523,7 +3533,8 @@ MR = (\sum D_i)(\sum (D_i/R_i))^{-1}
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="co"># VIF Calculation</span></span>
-<span id="cb16-2"><a href="#cb16-2"></a><span class="fu">library</span>(car)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb16-2"><a href="#cb16-2"></a><span class="fu">library</span>(knitr) </span>
+<span id="cb16-3"><a href="#cb16-3"></a><span class="fu">library</span>(car)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Loading required package: carData</code></pre>
 </div>
@@ -3789,7 +3800,8 @@ W = 0.98274, p-value = 0.5548</code></pre>
 </section>
 <section id="ridge-regression" class="level2">
 <h2 class="anchored" data-anchor-id="ridge-regression">Ridge Regression</h2>
-<p>Step 1: Find the Optimal Lambda</p>
+<section id="find-the-optimal-lambda" class="level3">
+<h3 class="anchored" data-anchor-id="find-the-optimal-lambda">Find the Optimal Lambda</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a><span class="fu">library</span>(MASS)</span>
 <span id="cb29-2"><a href="#cb29-2"></a><span class="fu">library</span>(glmnet)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -3801,53 +3813,72 @@ W = 0.98274, p-value = 0.5548</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a>Y <span class="ot">&lt;-</span> data.norm<span class="sc">$</span>MORT</span>
 <span id="cb32-2"><a href="#cb32-2"></a>X <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(data.norm[ , <span class="sc">!</span><span class="fu">names</span>(data.norm) <span class="sc">%in%</span> <span class="st">&quot;MORT&quot;</span>])</span>
-<span id="cb32-3"><a href="#cb32-3"></a><span class="co">#Cross-Validation</span></span>
-<span id="cb32-4"><a href="#cb32-4"></a>cv_ridge <span class="ot">&lt;-</span> <span class="fu">cv.glmnet</span>(X, Y, <span class="at">alpha =</span> <span class="dv">0</span>) </span>
-<span id="cb32-5"><a href="#cb32-5"></a>optimal_lambda <span class="ot">&lt;-</span> cv_ridge<span class="sc">$</span>lambda.min</span>
-<span id="cb32-6"><a href="#cb32-6"></a>optimal_lambda</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb32-3"><a href="#cb32-3"></a></span>
+<span id="cb32-4"><a href="#cb32-4"></a></span>
+<span id="cb32-5"><a href="#cb32-5"></a><span class="co">#Cross-Validation</span></span>
+<span id="cb32-6"><a href="#cb32-6"></a>cv_ridge <span class="ot">&lt;-</span> <span class="fu">cv.glmnet</span>(X, Y, <span class="at">alpha =</span> <span class="dv">0</span>) </span>
+<span id="cb32-7"><a href="#cb32-7"></a>optimal_lambda <span class="ot">&lt;-</span> cv_ridge<span class="sc">$</span>lambda.min</span>
+<span id="cb32-8"><a href="#cb32-8"></a></span>
+<span id="cb32-9"><a href="#cb32-9"></a>optimal_lambda</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.02107076</code></pre>
+<pre><code>[1] 0.02312513</code></pre>
 </div>
 </div>
-<p>Step 2: Fit Ridge Regression Model</p>
+<p>Cross-validation was used to identify the optimal penalty parameter <span class="math inline">\(\lambda\)</span>. This was done with the use of the cv.glmnet function, which helped the balance between bias and variance trade-offs.</p>
+<ul>
+<li>This process directly addresses the instability of coefficients observed in the OLS model.</li>
+</ul>
+</section>
+<section id="fit-ridge-regression-model" class="level3">
+<h3 class="anchored" data-anchor-id="fit-ridge-regression-model">Fit Ridge Regression Model</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a>ridge_model <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(X, Y, <span class="at">alpha =</span> <span class="dv">0</span>, <span class="at">lambda =</span> optimal_lambda)</span>
-<span id="cb34-2"><a href="#cb34-2"></a>ridge_coefficients <span class="ot">&lt;-</span> <span class="fu">coef</span>(ridge_model)</span>
-<span id="cb34-3"><a href="#cb34-3"></a>ridge_coefficients</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb34-2"><a href="#cb34-2"></a></span>
+<span id="cb34-3"><a href="#cb34-3"></a>ridge_coefficients <span class="ot">&lt;-</span> <span class="fu">coef</span>(ridge_model)</span>
+<span id="cb34-4"><a href="#cb34-4"></a></span>
+<span id="cb34-5"><a href="#cb34-5"></a>ridge_coefficients</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>16 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
                        s0
-(Intercept)  4.525589e-17
-PREC         2.522108e-01
-JANT        -1.812644e-01
-JULT        -9.752542e-02
-OVR65       -6.064194e-02
-POPN        -2.155978e-02
-EDUC        -1.153643e-01
-HOUS        -9.584172e-02
-DENS         1.219707e-01
-NONW         4.474025e-01
-WWDRK       -3.500516e-02
-POOR         3.896316e-02
-HC          -5.147412e-02
-NOX          4.758615e-02
-SOx          2.446573e-01
-HUMID        3.215296e-02</code></pre>
+(Intercept)  4.535475e-17
+PREC         2.480522e-01
+JANT        -1.750037e-01
+JULT        -9.154935e-02
+OVR65       -5.792957e-02
+POPN        -1.486354e-02
+EDUC        -1.142967e-01
+HOUS        -9.590328e-02
+DENS         1.226433e-01
+NONW         4.358975e-01
+WWDRK       -3.462487e-02
+POOR         4.079556e-02
+HC          -4.879111e-02
+NOX          4.531445e-02
+SOx          2.439352e-01
+HUMID        3.277160e-02</code></pre>
 </div>
 </div>
-<p>Step 3: Compare OLS and Ridge Coefficients</p>
+<p>After finding the optimal <span class="math inline">\(\lambda\)</span>, the Ridge Regression model was fit using glmnet. This helped with stabilizing coefficients, it was particularly notable with high collinear predictors (e.g. NOX, HC). Reducing the influence of these variables without eliminating them.</p>
+<ul>
+<li> Ridge Regression showed coefficients with a reduced variability. Showing a stabilized model.</li>
+</ul>
+</section>
+<section id="compare-ols-and-ridge-coefficients" class="level3">
+<h3 class="anchored" data-anchor-id="compare-ols-and-ridge-coefficients">Compare OLS and Ridge Coefficients</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a><span class="fu">library</span>(knitr)</span>
 <span id="cb36-2"><a href="#cb36-2"></a><span class="fu">library</span>(kableExtra)</span>
 <span id="cb36-3"><a href="#cb36-3"></a>ols_coefficients <span class="ot">&lt;-</span> <span class="fu">coef</span>(ols_model)</span>
-<span id="cb36-4"><a href="#cb36-4"></a><span class="co"># Compare </span></span>
-<span id="cb36-5"><a href="#cb36-5"></a>comparison <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb36-6"><a href="#cb36-6"></a>  <span class="at">Variable =</span> <span class="fu">rownames</span>(ridge_coefficients),</span>
-<span id="cb36-7"><a href="#cb36-7"></a>  <span class="at">OLS =</span> <span class="fu">as.numeric</span>(ols_coefficients),</span>
-<span id="cb36-8"><a href="#cb36-8"></a>  <span class="at">Ridge =</span> <span class="fu">as.numeric</span>(ridge_coefficients)</span>
-<span id="cb36-9"><a href="#cb36-9"></a>)</span>
-<span id="cb36-10"><a href="#cb36-10"></a><span class="co">#print(comparison)</span></span>
-<span id="cb36-11"><a href="#cb36-11"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(comparison, <span class="at">theme =</span> <span class="st">&quot;Minimal&quot;</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb36-4"><a href="#cb36-4"></a></span>
+<span id="cb36-5"><a href="#cb36-5"></a><span class="co"># Compare </span></span>
+<span id="cb36-6"><a href="#cb36-6"></a>comparison <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb36-7"><a href="#cb36-7"></a>  <span class="at">Variable =</span> <span class="fu">rownames</span>(ridge_coefficients),</span>
+<span id="cb36-8"><a href="#cb36-8"></a>  <span class="at">OLS =</span> <span class="fu">as.numeric</span>(ols_coefficients),</span>
+<span id="cb36-9"><a href="#cb36-9"></a>  <span class="at">Ridge =</span> <span class="fu">as.numeric</span>(ridge_coefficients)</span>
+<span id="cb36-10"><a href="#cb36-10"></a>)</span>
+<span id="cb36-11"><a href="#cb36-11"></a></span>
+<span id="cb36-12"><a href="#cb36-12"></a><span class="co">#print(comparison)</span></span>
+<span id="cb36-13"><a href="#cb36-13"></a><span class="fu">kable</span>(comparison, <span class="at">theme =</span> <span class="st">&quot;Minimal&quot;</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <thead>
@@ -3866,89 +3897,93 @@ HUMID        3.215296e-02</code></pre>
 <tr class="even">
 <td style="text-align: left;">PREC</td>
 <td style="text-align: right;">0.3058371</td>
-<td style="text-align: right;">0.2522108</td>
+<td style="text-align: right;">0.2480522</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">JANT</td>
 <td style="text-align: right;">-0.3167439</td>
-<td style="text-align: right;">-0.1812644</td>
+<td style="text-align: right;">-0.1750037</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">JULT</td>
 <td style="text-align: right;">-0.2374017</td>
-<td style="text-align: right;">-0.0975254</td>
+<td style="text-align: right;">-0.0915494</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">OVR65</td>
 <td style="text-align: right;">-0.2134310</td>
-<td style="text-align: right;">-0.0606419</td>
+<td style="text-align: right;">-0.0579296</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">POPN</td>
 <td style="text-align: right;">-0.2322663</td>
-<td style="text-align: right;">-0.0215598</td>
+<td style="text-align: right;">-0.0148635</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">EDUC</td>
 <td style="text-align: right;">-0.2331429</td>
-<td style="text-align: right;">-0.1153643</td>
+<td style="text-align: right;">-0.1142967</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">HOUS</td>
 <td style="text-align: right;">-0.0538151</td>
-<td style="text-align: right;">-0.0958417</td>
+<td style="text-align: right;">-0.0959033</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">DENS</td>
 <td style="text-align: right;">0.0841631</td>
-<td style="text-align: right;">0.1219707</td>
+<td style="text-align: right;">0.1226433</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">NONW</td>
 <td style="text-align: right;">0.6395617</td>
-<td style="text-align: right;">0.4474025</td>
+<td style="text-align: right;">0.4358975</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">WWDRK</td>
 <td style="text-align: right;">-0.0138715</td>
-<td style="text-align: right;">-0.0350052</td>
+<td style="text-align: right;">-0.0346249</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">POOR</td>
 <td style="text-align: right;">-0.0112112</td>
-<td style="text-align: right;">0.0389632</td>
+<td style="text-align: right;">0.0407956</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">HC</td>
 <td style="text-align: right;">-0.9938278</td>
-<td style="text-align: right;">-0.0514741</td>
+<td style="text-align: right;">-0.0487911</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">NOX</td>
 <td style="text-align: right;">0.9981482</td>
-<td style="text-align: right;">0.0475862</td>
+<td style="text-align: right;">0.0453145</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">SOx</td>
 <td style="text-align: right;">0.0878937</td>
-<td style="text-align: right;">0.2446573</td>
+<td style="text-align: right;">0.2439352</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">HUMID</td>
 <td style="text-align: right;">0.0092198</td>
-<td style="text-align: right;">0.0321530</td>
+<td style="text-align: right;">0.0327716</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-<p>Step 4: Multi-Collinearity Analysis</p>
+<p>This comparision showed shrinkage of coefficients in Ridge regression.</p>
+</section>
+<section id="multicollinearity-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="multicollinearity-analysis">Multicollinearity Analysis</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a><span class="co">#Find VIF</span></span>
 <span id="cb37-2"><a href="#cb37-2"></a><span class="fu">library</span>(car)</span>
 <span id="cb37-3"><a href="#cb37-3"></a>vif_values <span class="ot">&lt;-</span> <span class="fu">vif</span>(ols_model)</span>
-<span id="cb37-4"><a href="#cb37-4"></a><span class="co">#put in appendix</span></span>
-<span id="cb37-5"><a href="#cb37-5"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(vif_values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb37-4"><a href="#cb37-4"></a></span>
+<span id="cb37-5"><a href="#cb37-5"></a><span class="co">#put in appendix</span></span>
+<span id="cb37-6"><a href="#cb37-6"></a><span class="fu">kable</span>(vif_values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <thead>
@@ -4030,11 +4065,19 @@ HUMID        3.215296e-02</code></pre>
 </div>
 </div>
 </div>
-<p>Step 5: OLS Correlation Heatmap</p>
+<p>Variance Inflation Factors (VIF) were calculated for the OLS model to quantify multicollinearity.</p>
+<ul>
+<li><p>Predictors such as NOX and HC exhibited very hight VIF values (&gt;100), showing there is a severe multicollinear relationship.</p></li>
+<li><p>The Ridge Regression shows this issues are reduce, as shown by the stabilizatioon of coefficients.</p></li>
+</ul>
+</section>
+<section id="ols-correlation-heatmap" class="level3">
+<h3 class="anchored" data-anchor-id="ols-correlation-heatmap">OLS Correlation Heatmap</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a>cor_matrix <span class="ot">&lt;-</span> <span class="fu">cor</span>(data.norm)</span>
-<span id="cb39-2"><a href="#cb39-2"></a>ols_cor <span class="ot">&lt;-</span> <span class="fu">cor</span>(X)</span>
-<span id="cb39-3"><a href="#cb39-3"></a><span class="fu">heatmap</span>(ols_cor, <span class="at">symm =</span> <span class="cn">TRUE</span>, <span class="at">main =</span> <span class="st">&quot;OLS Correlation Heatmap&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb39-2"><a href="#cb39-2"></a></span>
+<span id="cb39-3"><a href="#cb39-3"></a>ols_cor <span class="ot">&lt;-</span> <span class="fu">cor</span>(X)</span>
+<span id="cb39-4"><a href="#cb39-4"></a><span class="fu">heatmap</span>(ols_cor, <span class="at">symm =</span> <span class="cn">TRUE</span>, <span class="at">main =</span> <span class="st">&quot;OLS Correlation Heatmap&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -4043,15 +4086,21 @@ HUMID        3.215296e-02</code></pre>
 </div>
 </div>
 </div>
-<p>Step 6: Predictive Accuracy</p>
+<p>This heatmap showed correlation among predictors, particularly between pollution variables. These correlations take from the importance of the Ridge Regression.</p>
+</section>
+<section id="predictive-accuracy" class="level3">
+<h3 class="anchored" data-anchor-id="predictive-accuracy">Predictive Accuracy</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1"></a>ols_predictions <span class="ot">&lt;-</span> <span class="fu">predict</span>(ols_model, data.norm)</span>
-<span id="cb40-2"><a href="#cb40-2"></a>ridge_predictions <span class="ot">&lt;-</span> <span class="fu">predict</span>(ridge_model, <span class="at">s =</span> optimal_lambda, <span class="at">newx =</span> X)</span>
-<span id="cb40-3"><a href="#cb40-3"></a><span class="co">#Find MSE</span></span>
-<span id="cb40-4"><a href="#cb40-4"></a>ols_mse <span class="ot">&lt;-</span> <span class="fu">mean</span>((Y <span class="sc">-</span> ols_predictions)<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb40-5"><a href="#cb40-5"></a>ridge_mse <span class="ot">&lt;-</span> <span class="fu">mean</span>((Y <span class="sc">-</span> ridge_predictions)<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb40-6"><a href="#cb40-6"></a><span class="co">#data.frame(Method = c(&quot;OLS&quot;, &quot;Ridge&quot;), MSE = c(ols_mse, ridge_mse))</span></span>
-<span id="cb40-7"><a href="#cb40-7"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">data.frame</span>(<span class="at">Method =</span> <span class="fu">c</span>(<span class="st">&quot;OLS&quot;</span>, <span class="st">&quot;Ridge&quot;</span>), <span class="at">MSE =</span> <span class="fu">c</span>(ols_mse, ridge_mse)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb40-2"><a href="#cb40-2"></a></span>
+<span id="cb40-3"><a href="#cb40-3"></a>ridge_predictions <span class="ot">&lt;-</span> <span class="fu">predict</span>(ridge_model, <span class="at">s =</span> optimal_lambda, <span class="at">newx =</span> X)</span>
+<span id="cb40-4"><a href="#cb40-4"></a></span>
+<span id="cb40-5"><a href="#cb40-5"></a><span class="co">#Find MSE</span></span>
+<span id="cb40-6"><a href="#cb40-6"></a>ols_mse <span class="ot">&lt;-</span> <span class="fu">mean</span>((Y <span class="sc">-</span> ols_predictions)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb40-7"><a href="#cb40-7"></a>ridge_mse <span class="ot">&lt;-</span> <span class="fu">mean</span>((Y <span class="sc">-</span> ridge_predictions)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb40-8"><a href="#cb40-8"></a></span>
+<span id="cb40-9"><a href="#cb40-9"></a><span class="co">#data.frame(Method = c(&quot;OLS&quot;, &quot;Ridge&quot;), MSE = c(ols_mse, ridge_mse))</span></span>
+<span id="cb40-10"><a href="#cb40-10"></a><span class="fu">kable</span>(<span class="fu">data.frame</span>(<span class="at">Method =</span> <span class="fu">c</span>(<span class="st">&quot;OLS&quot;</span>, <span class="st">&quot;Ridge&quot;</span>), <span class="at">MSE =</span> <span class="fu">c</span>(ols_mse, ridge_mse)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <thead>
@@ -4067,12 +4116,97 @@ HUMID        3.215296e-02</code></pre>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Ridge</td>
-<td style="text-align: right;">0.0044862</td>
+<td style="text-align: right;">0.0045344</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
+<p>Model performance was evaluated using the Mean Square Error (MSE):</p>
+<ul>
+<li><p>OLS MSE: 0.0039</p></li>
+<li><p>Ridge MSE: 0.0045</p></li>
+</ul>
+</section>
+<section id="ridge-trace-plot" class="level3">
+<h3 class="anchored" data-anchor-id="ridge-trace-plot">Ridge Trace Plot</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a><span class="fu">library</span>(plotly)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: &#39;plotly&#39;</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from &#39;package:MASS&#39;:
+
+    select</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from &#39;package:ggplot2&#39;:
+
+    last_plot</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from &#39;package:stats&#39;:
+
+    filter</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from &#39;package:graphics&#39;:
+
+    layout</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a>ridge_traces <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(X, Y, <span class="at">alpha =</span> <span class="dv">0</span>, <span class="at">lambda =</span> cv_ridge<span class="sc">$</span>lambda)</span>
+<span id="cb47-2"><a href="#cb47-2"></a>trace_coefficients <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">coef</span>(ridge_traces))</span>
+<span id="cb47-3"><a href="#cb47-3"></a></span>
+<span id="cb47-4"><a href="#cb47-4"></a>plot_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb47-5"><a href="#cb47-5"></a>  <span class="at">Lambda =</span> <span class="fu">rep</span>(cv_ridge<span class="sc">$</span>lambda, <span class="at">each =</span> <span class="fu">nrow</span>(trace_coefficients)),</span>
+<span id="cb47-6"><a href="#cb47-6"></a>  <span class="at">Coefficient =</span> <span class="fu">as.vector</span>(trace_coefficients),</span>
+<span id="cb47-7"><a href="#cb47-7"></a>  <span class="at">Variable =</span> <span class="fu">rep</span>(<span class="fu">rownames</span>(trace_coefficients), <span class="at">times =</span> <span class="fu">length</span>(cv_ridge<span class="sc">$</span>lambda))</span>
+<span id="cb47-8"><a href="#cb47-8"></a>)</span>
+<span id="cb47-9"><a href="#cb47-9"></a></span>
+<span id="cb47-10"><a href="#cb47-10"></a><span class="fu">ggplot</span>(plot_data, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">log</span>(Lambda), <span class="at">y =</span> Coefficient, <span class="at">color =</span> Variable)) <span class="sc">+</span></span>
+<span id="cb47-11"><a href="#cb47-11"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb47-12"><a href="#cb47-12"></a>  <span class="fu">labs</span>(</span>
+<span id="cb47-13"><a href="#cb47-13"></a>    <span class="at">title =</span> <span class="st">&quot;Ridge Trace Plot&quot;</span>,</span>
+<span id="cb47-14"><a href="#cb47-14"></a>    <span class="at">x =</span> <span class="st">&quot;Log(Optimal Lambda)&quot;</span>,</span>
+<span id="cb47-15"><a href="#cb47-15"></a>    <span class="at">y =</span> <span class="st">&quot;Coefficient&quot;</span></span>
+<span id="cb47-16"><a href="#cb47-16"></a>  ) <span class="sc">+</span></span>
+<span id="cb47-17"><a href="#cb47-17"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img role="img" src="data:image/png;base64,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" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1"></a><span class="co">#note: this ridge trace plot looks like the timeline from LOKI</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The Ridge trace plot illustrated the progression of coefficients as <span class="math inline">\(\lambda\)</span> increased.</p>
+<ul>
+<li><p>As shown in the graph, variables experienced significant shrinkage, showing the model’s ability to penalize less relevant predictors.</p></li>
+<li><p>Stabilization of more key predictors (e.g. PREC, DENS), show there relevance to the response variable with a lower <span class="math inline">\(\lambda\)</span> value.</p></li>
+</ul>
+</section>
+</section>
+<section id="interpretation" class="level2">
+<h2 class="anchored" data-anchor-id="interpretation">Interpretation</h2>
+<p>Pollution Variables:</p>
+<ul>
+<li>The Ridge regression showed a lowered influence of multicollinear pollution variables. Such as, NOX, HC, and SOX, aligning with the expected outcomes.</li>
+</ul>
+<p>Demographic Factors:</p>
+<ul>
+<li>These predictors, such as, NONW (percent nonwhite population) and OVR65 (percent population over 65) showed retention in their significance. Which showed an emphasis in socioeconomic and age-related disparities in mortality.</li>
+</ul>
+<p>Bias-Variance:</p>
+<ul>
+<li>With the use of Ridge regression, a slight bias was introduced as well. This can be seen in the increased MSE value, but also with a slightly reduced variance. This trade off helped enhance the robustness and readability, especially with the presence of multicollinearity.</li>
+</ul>
+<p>Conclusion:</p>
+<ul>
+<li>This Ridge regression effectively lessened the multicollinearity, showing a stabilization of coefficient estimates and improved model.</li>
+</ul>
 </section>
 <section id="variable-selection" class="level2">
 <h2 class="anchored" data-anchor-id="variable-selection">Variable Selection</h2>
@@ -4085,39 +4219,39 @@ C_p = \dfrac{RSS_p}{\hat{\sigma^2}} - (n- 2p)
 <section id="choosing-the-number-of-predictors" class="level4">
 <h4 class="anchored" data-anchor-id="choosing-the-number-of-predictors">Choosing the Number of Predictors</h4>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a><span class="co">#plotting mallow&#39;s Cp</span></span>
-<span id="cb41-2"><a href="#cb41-2"></a></span>
-<span id="cb41-3"><a href="#cb41-3"></a><span class="fu">library</span>(ggplot2)  <span class="co"># For plotting</span></span>
-<span id="cb41-4"><a href="#cb41-4"></a><span class="fu">library</span>(leaps)    <span class="co"># For all subset regression</span></span>
-<span id="cb41-5"><a href="#cb41-5"></a></span>
-<span id="cb41-6"><a href="#cb41-6"></a><span class="co">#separating the data for response and predictors</span></span>
-<span id="cb41-7"><a href="#cb41-7"></a>response <span class="ot">&lt;-</span> data.norm<span class="sc">$</span>MORT</span>
-<span id="cb41-8"><a href="#cb41-8"></a>predictors <span class="ot">&lt;-</span> <span class="fu">names</span>(data.norm)[<span class="fu">names</span>(data.norm) <span class="sc">!=</span> <span class="st">&quot;MORT&quot;</span>]</span>
-<span id="cb41-9"><a href="#cb41-9"></a></span>
-<span id="cb41-10"><a href="#cb41-10"></a><span class="co">#Step 1: use subsets regression to perform cp mallows calculations</span></span>
-<span id="cb41-11"><a href="#cb41-11"></a>subs_reg <span class="ot">&lt;-</span> <span class="fu">regsubsets</span>(response <span class="sc">~</span> ., <span class="at">data =</span> data.norm, <span class="at">nvmax =</span> <span class="fu">length</span>(predictors))</span>
-<span id="cb41-12"><a href="#cb41-12"></a>subsets_summary <span class="ot">&lt;-</span> <span class="fu">summary</span>(subs_reg)</span>
-<span id="cb41-13"><a href="#cb41-13"></a></span>
-<span id="cb41-14"><a href="#cb41-14"></a><span class="co">#Step 2: get mallows cp and determined number of preds</span></span>
-<span id="cb41-15"><a href="#cb41-15"></a>cp_dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">num_pred =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(subsets_summary<span class="sc">$</span>cp) <span class="sc">-</span> <span class="dv">1</span>, <span class="at">cp =</span> subsets_summary<span class="sc">$</span>cp)</span>
-<span id="cb41-16"><a href="#cb41-16"></a></span>
-<span id="cb41-17"><a href="#cb41-17"></a><span class="co">#Step 3: create two new variables: the number of parameters plus the intercept, and then the difference between the cp value and the parameter variable. We want to pick the model that will have the number of predictors be very close to the CP value</span></span>
-<span id="cb41-18"><a href="#cb41-18"></a>cp_dat<span class="sc">$</span>parameters <span class="ot">&lt;-</span> cp_dat<span class="sc">$</span>num_pred <span class="sc">+</span> <span class="dv">1</span> <span class="co"># Include the intercept</span></span>
-<span id="cb41-19"><a href="#cb41-19"></a>cp_dat<span class="sc">$</span>cp_diff <span class="ot">&lt;-</span> <span class="fu">abs</span>(cp_dat<span class="sc">$</span>cp <span class="sc">-</span> cp_dat<span class="sc">$</span>parameters) <span class="co"># Difference between Cp and p</span></span>
-<span id="cb41-20"><a href="#cb41-20"></a>best_cp_row <span class="ot">&lt;-</span> cp_dat[<span class="fu">which.min</span>(cp_dat<span class="sc">$</span>cp_diff), ] <span class="co"># Row with the best match</span></span>
-<span id="cb41-21"><a href="#cb41-21"></a></span>
-<span id="cb41-22"><a href="#cb41-22"></a><span class="co"># Step 4: Visualize Mallows&#39; Cp</span></span>
-<span id="cb41-23"><a href="#cb41-23"></a><span class="fu">ggplot</span>(cp_dat, <span class="fu">aes</span>(<span class="at">x =</span> num_pred, <span class="at">y =</span> cp)) <span class="sc">+</span></span>
-<span id="cb41-24"><a href="#cb41-24"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span>  <span class="co"># Plot all points</span></span>
-<span id="cb41-25"><a href="#cb41-25"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span>   <span class="co"># Connect points with a line</span></span>
-<span id="cb41-26"><a href="#cb41-26"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> best_cp_row, <span class="fu">aes</span>(<span class="at">x =</span> num_pred, <span class="at">y =</span> cp),</span>
-<span id="cb41-27"><a href="#cb41-27"></a>             <span class="at">color =</span> <span class="st">&quot;red&quot;</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span>  <span class="co"># Highlight the desired point</span></span>
-<span id="cb41-28"><a href="#cb41-28"></a>  <span class="fu">labs</span>(</span>
-<span id="cb41-29"><a href="#cb41-29"></a>    <span class="at">title =</span> <span class="fu">paste</span>(<span class="st">&quot;Mallows&#39; Cp Plot (Highlighting 15 Predictors&quot;</span>),</span>
-<span id="cb41-30"><a href="#cb41-30"></a>    <span class="at">x =</span> <span class="st">&quot;Number of Predictors&quot;</span>,</span>
-<span id="cb41-31"><a href="#cb41-31"></a>    <span class="at">y =</span> <span class="st">&quot;Mallows&#39; Cp&quot;</span></span>
-<span id="cb41-32"><a href="#cb41-32"></a>  ) <span class="sc">+</span></span>
-<span id="cb41-33"><a href="#cb41-33"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1"></a><span class="co">#plotting mallow&#39;s Cp</span></span>
+<span id="cb49-2"><a href="#cb49-2"></a></span>
+<span id="cb49-3"><a href="#cb49-3"></a><span class="fu">library</span>(ggplot2)  <span class="co"># For plotting</span></span>
+<span id="cb49-4"><a href="#cb49-4"></a><span class="fu">library</span>(leaps)    <span class="co"># For all subset regression</span></span>
+<span id="cb49-5"><a href="#cb49-5"></a></span>
+<span id="cb49-6"><a href="#cb49-6"></a><span class="co">#separating the data for response and predictors</span></span>
+<span id="cb49-7"><a href="#cb49-7"></a>response <span class="ot">&lt;-</span> data.norm<span class="sc">$</span>MORT</span>
+<span id="cb49-8"><a href="#cb49-8"></a>predictors <span class="ot">&lt;-</span> <span class="fu">names</span>(data.norm)[<span class="fu">names</span>(data.norm) <span class="sc">!=</span> <span class="st">&quot;MORT&quot;</span>]</span>
+<span id="cb49-9"><a href="#cb49-9"></a></span>
+<span id="cb49-10"><a href="#cb49-10"></a><span class="co">#Step 1: use subsets regression to perform cp mallows calculations</span></span>
+<span id="cb49-11"><a href="#cb49-11"></a>subs_reg <span class="ot">&lt;-</span> <span class="fu">regsubsets</span>(response <span class="sc">~</span> ., <span class="at">data =</span> data.norm, <span class="at">nvmax =</span> <span class="fu">length</span>(predictors))</span>
+<span id="cb49-12"><a href="#cb49-12"></a>subsets_summary <span class="ot">&lt;-</span> <span class="fu">summary</span>(subs_reg)</span>
+<span id="cb49-13"><a href="#cb49-13"></a></span>
+<span id="cb49-14"><a href="#cb49-14"></a><span class="co">#Step 2: get mallows cp and determined number of preds</span></span>
+<span id="cb49-15"><a href="#cb49-15"></a>cp_dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">num_pred =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(subsets_summary<span class="sc">$</span>cp) <span class="sc">-</span> <span class="dv">1</span>, <span class="at">cp =</span> subsets_summary<span class="sc">$</span>cp)</span>
+<span id="cb49-16"><a href="#cb49-16"></a></span>
+<span id="cb49-17"><a href="#cb49-17"></a><span class="co">#Step 3: create two new variables: the number of parameters plus the intercept, and then the difference between the cp value and the parameter variable. We want to pick the model that will have the number of predictors be very close to the CP value</span></span>
+<span id="cb49-18"><a href="#cb49-18"></a>cp_dat<span class="sc">$</span>parameters <span class="ot">&lt;-</span> cp_dat<span class="sc">$</span>num_pred <span class="sc">+</span> <span class="dv">1</span> <span class="co"># Include the intercept</span></span>
+<span id="cb49-19"><a href="#cb49-19"></a>cp_dat<span class="sc">$</span>cp_diff <span class="ot">&lt;-</span> <span class="fu">abs</span>(cp_dat<span class="sc">$</span>cp <span class="sc">-</span> cp_dat<span class="sc">$</span>parameters) <span class="co"># Difference between Cp and p</span></span>
+<span id="cb49-20"><a href="#cb49-20"></a>best_cp_row <span class="ot">&lt;-</span> cp_dat[<span class="fu">which.min</span>(cp_dat<span class="sc">$</span>cp_diff), ] <span class="co"># Row with the best match</span></span>
+<span id="cb49-21"><a href="#cb49-21"></a></span>
+<span id="cb49-22"><a href="#cb49-22"></a><span class="co"># Step 4: Visualize Mallows&#39; Cp</span></span>
+<span id="cb49-23"><a href="#cb49-23"></a><span class="fu">ggplot</span>(cp_dat, <span class="fu">aes</span>(<span class="at">x =</span> num_pred, <span class="at">y =</span> cp)) <span class="sc">+</span></span>
+<span id="cb49-24"><a href="#cb49-24"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span>  <span class="co"># Plot all points</span></span>
+<span id="cb49-25"><a href="#cb49-25"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span>   <span class="co"># Connect points with a line</span></span>
+<span id="cb49-26"><a href="#cb49-26"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> best_cp_row, <span class="fu">aes</span>(<span class="at">x =</span> num_pred, <span class="at">y =</span> cp),</span>
+<span id="cb49-27"><a href="#cb49-27"></a>             <span class="at">color =</span> <span class="st">&quot;red&quot;</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span>  <span class="co"># Highlight the desired point</span></span>
+<span id="cb49-28"><a href="#cb49-28"></a>  <span class="fu">labs</span>(</span>
+<span id="cb49-29"><a href="#cb49-29"></a>    <span class="at">title =</span> <span class="fu">paste</span>(<span class="st">&quot;Mallows&#39; Cp Plot (Highlighting 15 Predictors&quot;</span>),</span>
+<span id="cb49-30"><a href="#cb49-30"></a>    <span class="at">x =</span> <span class="st">&quot;Number of Predictors&quot;</span>,</span>
+<span id="cb49-31"><a href="#cb49-31"></a>    <span class="at">y =</span> <span class="st">&quot;Mallows&#39; Cp&quot;</span></span>
+<span id="cb49-32"><a href="#cb49-32"></a>  ) <span class="sc">+</span></span>
+<span id="cb49-33"><a href="#cb49-33"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -4128,15 +4262,15 @@ C_p = \dfrac{RSS_p}{\hat{\sigma^2}} - (n- 2p)
 </div>
 <p>In the plot above, I’ve constructed a simple plot that will show us what number of predictors is ideal according to Mallows’ <span class="math inline">\(C_p\)</span>. I determined the absolute difference between the <span class="math inline">\(C_p\)</span> value and the number of parameters, making sure to take into account the intercept. The algorithm was then able to spit out the most ideal value, and tell us what model we should use that has the right number of predictors. As we can see above, we want to use a model that has 13 predictor values, that does not include our intercept.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1"></a><span class="fu">library</span>(knitr)</span>
-<span id="cb42-2"><a href="#cb42-2"></a></span>
-<span id="cb42-3"><a href="#cb42-3"></a><span class="co"># Step 3: Sort by Difference</span></span>
-<span id="cb42-4"><a href="#cb42-4"></a>cp_table <span class="ot">&lt;-</span> cp_dat[<span class="fu">order</span>(cp_dat<span class="sc">$</span>cp_diff), ] <span class="co"># Sort by smallest difference</span></span>
-<span id="cb42-5"><a href="#cb42-5"></a></span>
-<span id="cb42-6"><a href="#cb42-6"></a><span class="co"># Step 4: Display Table</span></span>
-<span id="cb42-7"><a href="#cb42-7"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(cp_table, <span class="at">col.names =</span> <span class="fu">c</span>(</span>
-<span id="cb42-8"><a href="#cb42-8"></a>  <span class="st">&quot;Number of Predictors&quot;</span>, <span class="st">&quot;Mallows&#39; Cp&quot;</span>, <span class="st">&quot;Parameters (p+1)&quot;</span>, <span class="st">&quot;Difference (|Cp - Parameters|)&quot;</span></span>
-<span id="cb42-9"><a href="#cb42-9"></a>), <span class="at">caption =</span> <span class="st">&quot;Mallows&#39; Cp Table with Differences&quot;</span>, <span class="at">format =</span> <span class="st">&quot;html&quot;</span>) <span class="co"># Adjust format if not in markdown</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb50-2"><a href="#cb50-2"></a></span>
+<span id="cb50-3"><a href="#cb50-3"></a><span class="co"># Step 3: Sort by Difference</span></span>
+<span id="cb50-4"><a href="#cb50-4"></a>cp_table <span class="ot">&lt;-</span> cp_dat[<span class="fu">order</span>(cp_dat<span class="sc">$</span>cp_diff), ] <span class="co"># Sort by smallest difference</span></span>
+<span id="cb50-5"><a href="#cb50-5"></a></span>
+<span id="cb50-6"><a href="#cb50-6"></a><span class="co"># Step 4: Display Table</span></span>
+<span id="cb50-7"><a href="#cb50-7"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(cp_table, <span class="at">col.names =</span> <span class="fu">c</span>(</span>
+<span id="cb50-8"><a href="#cb50-8"></a>  <span class="st">&quot;Number of Predictors&quot;</span>, <span class="st">&quot;Mallows&#39; Cp&quot;</span>, <span class="st">&quot;Parameters (p+1)&quot;</span>, <span class="st">&quot;Difference (|Cp - Parameters|)&quot;</span></span>
+<span id="cb50-9"><a href="#cb50-9"></a>), <span class="at">caption =</span> <span class="st">&quot;Mallows&#39; Cp Table with Differences&quot;</span>, <span class="at">format =</span> <span class="st">&quot;html&quot;</span>) <span class="co"># Adjust format if not in markdown</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
 <caption>Mallows&#39; Cp Table with Differences</caption>
@@ -4266,16 +4400,16 @@ C_p = \dfrac{RSS_p}{\hat{\sigma^2}} - (n- 2p)
 <section id="the-reduced-model" class="level4">
 <h4 class="anchored" data-anchor-id="the-reduced-model">The Reduced Model</h4>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a><span class="co">#Step 1: find out the optimal number of coefficients according to CP, then use that to create a variable for the predictors</span></span>
-<span id="cb43-2"><a href="#cb43-2"></a>min_cp_index <span class="ot">&lt;-</span> <span class="fu">which.min</span>(cp_dat<span class="sc">$</span>cp_diff)</span>
-<span id="cb43-3"><a href="#cb43-3"></a>best_predictors <span class="ot">&lt;-</span> <span class="fu">names</span>(<span class="fu">coef</span>(subs_reg, <span class="at">id =</span> min_cp_index))</span>
-<span id="cb43-4"><a href="#cb43-4"></a>best_predictors <span class="ot">&lt;-</span> best_predictors[best_predictors <span class="sc">!=</span> <span class="st">&quot;(Intercept)&quot;</span>]</span>
-<span id="cb43-5"><a href="#cb43-5"></a></span>
-<span id="cb43-6"><a href="#cb43-6"></a><span class="co"># Step 2: create our reduced model formula using the above predictors</span></span>
-<span id="cb43-7"><a href="#cb43-7"></a>red_cp_formula <span class="ot">&lt;-</span> <span class="fu">as.formula</span>(<span class="fu">paste</span>(<span class="st">&quot;MORT ~&quot;</span>, <span class="fu">paste</span>(best_predictors, <span class="at">collapse =</span> <span class="st">&quot; + &quot;</span>)))</span>
-<span id="cb43-8"><a href="#cb43-8"></a></span>
-<span id="cb43-9"><a href="#cb43-9"></a><span class="co"># Step 3: fit reduced model using normalized data and spit out summary</span></span>
-<span id="cb43-10"><a href="#cb43-10"></a>red_cp_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(red_cp_formula, <span class="at">data =</span> data.norm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1"></a><span class="co">#Step 1: find out the optimal number of coefficients according to CP, then use that to create a variable for the predictors</span></span>
+<span id="cb51-2"><a href="#cb51-2"></a>min_cp_index <span class="ot">&lt;-</span> <span class="fu">which.min</span>(cp_dat<span class="sc">$</span>cp_diff)</span>
+<span id="cb51-3"><a href="#cb51-3"></a>best_predictors <span class="ot">&lt;-</span> <span class="fu">names</span>(<span class="fu">coef</span>(subs_reg, <span class="at">id =</span> min_cp_index))</span>
+<span id="cb51-4"><a href="#cb51-4"></a>best_predictors <span class="ot">&lt;-</span> best_predictors[best_predictors <span class="sc">!=</span> <span class="st">&quot;(Intercept)&quot;</span>]</span>
+<span id="cb51-5"><a href="#cb51-5"></a></span>
+<span id="cb51-6"><a href="#cb51-6"></a><span class="co"># Step 2: create our reduced model formula using the above predictors</span></span>
+<span id="cb51-7"><a href="#cb51-7"></a>red_cp_formula <span class="ot">&lt;-</span> <span class="fu">as.formula</span>(<span class="fu">paste</span>(<span class="st">&quot;MORT ~&quot;</span>, <span class="fu">paste</span>(best_predictors, <span class="at">collapse =</span> <span class="st">&quot; + &quot;</span>)))</span>
+<span id="cb51-8"><a href="#cb51-8"></a></span>
+<span id="cb51-9"><a href="#cb51-9"></a><span class="co"># Step 3: fit reduced model using normalized data and spit out summary</span></span>
+<span id="cb51-10"><a href="#cb51-10"></a>red_cp_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(red_cp_formula, <span class="at">data =</span> data.norm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in model.matrix.default(mt, mf, contrasts): the response appeared on
 the right-hand side and was dropped</code></pre>
@@ -4284,7 +4418,7 @@ the right-hand side and was dropped</code></pre>
 <pre><code>Warning in model.matrix.default(mt, mf, contrasts): problem with term 14 in
 model.matrix: no columns are assigned</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1"></a><span class="fu">summary</span>(red_cp_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1"></a><span class="fu">summary</span>(red_cp_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -4330,19 +4464,19 @@ F-statistic: 11.51 on 13 and 46 DF,  p-value: 1.885e-10</code></pre>
 <h4 class="anchored" data-anchor-id="reduced-model-assumptions">Reduced Model Assumptions</h4>
 <p>Now let’s see if our reduced model using Mallows’ <span class="math inline">\(C_p\)</span> checks the assumptions.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1"></a><span class="co">#checking the residuals for the reduced CP Model</span></span>
-<span id="cb48-2"><a href="#cb48-2"></a><span class="fu">ggplot</span>(<span class="at">data =</span> <span class="fu">data.frame</span>(</span>
-<span id="cb48-3"><a href="#cb48-3"></a>  <span class="at">residuals =</span> <span class="fu">residuals</span>(red_cp_model),</span>
-<span id="cb48-4"><a href="#cb48-4"></a>  <span class="at">fitted =</span> <span class="fu">fitted</span>(red_cp_model)</span>
-<span id="cb48-5"><a href="#cb48-5"></a>), <span class="fu">aes</span>(<span class="at">x =</span> fitted, <span class="at">y =</span> residuals)) <span class="sc">+</span></span>
-<span id="cb48-6"><a href="#cb48-6"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb48-7"><a href="#cb48-7"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
-<span id="cb48-8"><a href="#cb48-8"></a>  <span class="fu">labs</span>(</span>
-<span id="cb48-9"><a href="#cb48-9"></a>    <span class="at">title =</span> <span class="st">&quot;Residuals vs. Fitted Values&quot;</span>,</span>
-<span id="cb48-10"><a href="#cb48-10"></a>    <span class="at">x =</span> <span class="st">&quot;Fitted Values&quot;</span>,</span>
-<span id="cb48-11"><a href="#cb48-11"></a>    <span class="at">y =</span> <span class="st">&quot;Residuals&quot;</span></span>
-<span id="cb48-12"><a href="#cb48-12"></a>  ) <span class="sc">+</span></span>
-<span id="cb48-13"><a href="#cb48-13"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1"></a><span class="co">#checking the residuals for the reduced CP Model</span></span>
+<span id="cb56-2"><a href="#cb56-2"></a><span class="fu">ggplot</span>(<span class="at">data =</span> <span class="fu">data.frame</span>(</span>
+<span id="cb56-3"><a href="#cb56-3"></a>  <span class="at">residuals =</span> <span class="fu">residuals</span>(red_cp_model),</span>
+<span id="cb56-4"><a href="#cb56-4"></a>  <span class="at">fitted =</span> <span class="fu">fitted</span>(red_cp_model)</span>
+<span id="cb56-5"><a href="#cb56-5"></a>), <span class="fu">aes</span>(<span class="at">x =</span> fitted, <span class="at">y =</span> residuals)) <span class="sc">+</span></span>
+<span id="cb56-6"><a href="#cb56-6"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb56-7"><a href="#cb56-7"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
+<span id="cb56-8"><a href="#cb56-8"></a>  <span class="fu">labs</span>(</span>
+<span id="cb56-9"><a href="#cb56-9"></a>    <span class="at">title =</span> <span class="st">&quot;Residuals vs. Fitted Values&quot;</span>,</span>
+<span id="cb56-10"><a href="#cb56-10"></a>    <span class="at">x =</span> <span class="st">&quot;Fitted Values&quot;</span>,</span>
+<span id="cb56-11"><a href="#cb56-11"></a>    <span class="at">y =</span> <span class="st">&quot;Residuals&quot;</span></span>
+<span id="cb56-12"><a href="#cb56-12"></a>  ) <span class="sc">+</span></span>
+<span id="cb56-13"><a href="#cb56-13"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -4352,8 +4486,8 @@ F-statistic: 11.51 on 13 and 46 DF,  p-value: 1.885e-10</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1"></a><span class="fu">qqnorm</span>(red_cp_model<span class="sc">$</span>residuals)</span>
-<span id="cb49-2"><a href="#cb49-2"></a><span class="fu">qqline</span>(red_cp_model<span class="sc">$</span>residuals)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1"></a><span class="fu">qqnorm</span>(red_cp_model<span class="sc">$</span>residuals)</span>
+<span id="cb57-2"><a href="#cb57-2"></a><span class="fu">qqline</span>(red_cp_model<span class="sc">$</span>residuals)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -4361,7 +4495,7 @@ F-statistic: 11.51 on 13 and 46 DF,  p-value: 1.885e-10</code></pre>
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1"></a><span class="fu">shapiro.test</span>(red_cp_model<span class="sc">$</span>residuals)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1"></a><span class="fu">shapiro.test</span>(red_cp_model<span class="sc">$</span>residuals)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Shapiro-Wilk normality test
@@ -4372,27 +4506,27 @@ W = 0.98396, p-value = 0.6164</code></pre>
 </div>
 <p>Our assumptions still appear to be met with the reduced model, so we can move forward to check on the multi-collinearity.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1"></a><span class="fu">library</span>(reshape2)</span>
-<span id="cb52-2"><a href="#cb52-2"></a>data_reduced <span class="ot">&lt;-</span> data.norm[, best_predictors]</span>
-<span id="cb52-3"><a href="#cb52-3"></a>cor_matrix <span class="ot">&lt;-</span> <span class="fu">cor</span>(data_reduced)</span>
-<span id="cb52-4"><a href="#cb52-4"></a></span>
-<span id="cb52-5"><a href="#cb52-5"></a>cor_data <span class="ot">&lt;-</span> <span class="fu">melt</span>(cor_matrix)</span>
-<span id="cb52-6"><a href="#cb52-6"></a><span class="fu">ggplot</span>(cor_data, <span class="fu">aes</span>(<span class="at">x =</span> Var1, <span class="at">y =</span> Var2, <span class="at">fill =</span> value)) <span class="sc">+</span></span>
-<span id="cb52-7"><a href="#cb52-7"></a>  <span class="fu">geom_tile</span>(<span class="at">color =</span> <span class="st">&quot;white&quot;</span>) <span class="sc">+</span></span>
-<span id="cb52-8"><a href="#cb52-8"></a>  <span class="fu">scale_fill_gradient2</span>(</span>
-<span id="cb52-9"><a href="#cb52-9"></a>    <span class="at">low =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">high =</span> <span class="st">&quot;red&quot;</span>, <span class="at">mid =</span> <span class="st">&quot;white&quot;</span>, <span class="at">midpoint =</span> <span class="dv">0</span>, <span class="at">limit =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>),</span>
-<span id="cb52-10"><a href="#cb52-10"></a>    <span class="at">name =</span> <span class="st">&quot;Correlation&quot;</span></span>
-<span id="cb52-11"><a href="#cb52-11"></a>  ) <span class="sc">+</span></span>
-<span id="cb52-12"><a href="#cb52-12"></a>  <span class="fu">labs</span>(</span>
-<span id="cb52-13"><a href="#cb52-13"></a>    <span class="at">title =</span> <span class="st">&quot;Correlation Plot for Predictors in Reduced Model&quot;</span>,</span>
-<span id="cb52-14"><a href="#cb52-14"></a>    <span class="at">x =</span> <span class="st">&quot;Predictors&quot;</span>,</span>
-<span id="cb52-15"><a href="#cb52-15"></a>    <span class="at">y =</span> <span class="st">&quot;Predictors&quot;</span></span>
-<span id="cb52-16"><a href="#cb52-16"></a>  ) <span class="sc">+</span></span>
-<span id="cb52-17"><a href="#cb52-17"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb52-18"><a href="#cb52-18"></a>  <span class="fu">theme</span>(</span>
-<span id="cb52-19"><a href="#cb52-19"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>),</span>
-<span id="cb52-20"><a href="#cb52-20"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>)</span>
-<span id="cb52-21"><a href="#cb52-21"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1"></a><span class="fu">library</span>(reshape2)</span>
+<span id="cb60-2"><a href="#cb60-2"></a>data_reduced <span class="ot">&lt;-</span> data.norm[, best_predictors]</span>
+<span id="cb60-3"><a href="#cb60-3"></a>cor_matrix <span class="ot">&lt;-</span> <span class="fu">cor</span>(data_reduced)</span>
+<span id="cb60-4"><a href="#cb60-4"></a></span>
+<span id="cb60-5"><a href="#cb60-5"></a>cor_data <span class="ot">&lt;-</span> <span class="fu">melt</span>(cor_matrix)</span>
+<span id="cb60-6"><a href="#cb60-6"></a><span class="fu">ggplot</span>(cor_data, <span class="fu">aes</span>(<span class="at">x =</span> Var1, <span class="at">y =</span> Var2, <span class="at">fill =</span> value)) <span class="sc">+</span></span>
+<span id="cb60-7"><a href="#cb60-7"></a>  <span class="fu">geom_tile</span>(<span class="at">color =</span> <span class="st">&quot;white&quot;</span>) <span class="sc">+</span></span>
+<span id="cb60-8"><a href="#cb60-8"></a>  <span class="fu">scale_fill_gradient2</span>(</span>
+<span id="cb60-9"><a href="#cb60-9"></a>    <span class="at">low =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">high =</span> <span class="st">&quot;red&quot;</span>, <span class="at">mid =</span> <span class="st">&quot;white&quot;</span>, <span class="at">midpoint =</span> <span class="dv">0</span>, <span class="at">limit =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb60-10"><a href="#cb60-10"></a>    <span class="at">name =</span> <span class="st">&quot;Correlation&quot;</span></span>
+<span id="cb60-11"><a href="#cb60-11"></a>  ) <span class="sc">+</span></span>
+<span id="cb60-12"><a href="#cb60-12"></a>  <span class="fu">labs</span>(</span>
+<span id="cb60-13"><a href="#cb60-13"></a>    <span class="at">title =</span> <span class="st">&quot;Correlation Plot for Predictors in Reduced Model&quot;</span>,</span>
+<span id="cb60-14"><a href="#cb60-14"></a>    <span class="at">x =</span> <span class="st">&quot;Predictors&quot;</span>,</span>
+<span id="cb60-15"><a href="#cb60-15"></a>    <span class="at">y =</span> <span class="st">&quot;Predictors&quot;</span></span>
+<span id="cb60-16"><a href="#cb60-16"></a>  ) <span class="sc">+</span></span>
+<span id="cb60-17"><a href="#cb60-17"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb60-18"><a href="#cb60-18"></a>  <span class="fu">theme</span>(</span>
+<span id="cb60-19"><a href="#cb60-19"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>),</span>
+<span id="cb60-20"><a href="#cb60-20"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>)</span>
+<span id="cb60-21"><a href="#cb60-21"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -4403,13 +4537,13 @@ W = 0.98396, p-value = 0.6164</code></pre>
 </div>
 <p>As expected, multi-collinearity stayed approximately the same. While the removal of two variables did make the graph slightly better, there still is a good amount of variables present, especially ones that are highly correlated together such as the chemical pollution variables. Finally, we compare the AIC values of the full model versus the reduced model, using Mallows’ <span class="math inline">\(C_p\)</span>, to see if the reduced model performs better.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1"></a><span class="co">#compare to full model - OLS model</span></span>
-<span id="cb53-2"><a href="#cb53-2"></a></span>
-<span id="cb53-3"><a href="#cb53-3"></a><span class="fu">cat</span>(<span class="st">&quot;AIC of full model:&quot;</span>, <span class="fu">AIC</span>(ols_model), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1"></a><span class="co">#compare to full model - OLS model</span></span>
+<span id="cb61-2"><a href="#cb61-2"></a></span>
+<span id="cb61-3"><a href="#cb61-3"></a><span class="fu">cat</span>(<span class="st">&quot;AIC of full model:&quot;</span>, <span class="fu">AIC</span>(ols_model), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>AIC of full model: -128.2472 </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1"></a><span class="fu">cat</span>(<span class="st">&quot;AIC of reduced model using Mallow&#39;s:&quot;</span>, <span class="fu">AIC</span>(red_cp_model), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1"></a><span class="fu">cat</span>(<span class="st">&quot;AIC of reduced model using Mallow&#39;s:&quot;</span>, <span class="fu">AIC</span>(red_cp_model), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>AIC of reduced model using Mallow&#39;s: -132.2287 </code></pre>
 </div>
@@ -4428,29 +4562,29 @@ W = 0.98396, p-value = 0.6164</code></pre>
 </ul>
 <p>We have 15 predictors in our dataset, and we want to investigate the relationship between them and the response variable (mortality). There is a high correlation between most of the predictors. <a href="#fig-corr-xx" class="quarto-xref">Figure 1</a> illustrates this:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1"></a><span class="co">#|warning: false</span></span>
-<span id="cb57-2"><a href="#cb57-2"></a><span class="co">#------------------Cleaning the memory</span></span>
-<span id="cb57-3"><a href="#cb57-3"></a><span class="fu">rm</span>(<span class="at">list=</span><span class="fu">ls</span>())</span>
-<span id="cb57-4"><a href="#cb57-4"></a><span class="co">#------------------Reading Data</span></span>
-<span id="cb57-5"><a href="#cb57-5"></a><span class="fu">library</span>(leaps)</span>
-<span id="cb57-6"><a href="#cb57-6"></a><span class="fu">library</span>(<span class="st">&quot;bestglm&quot;</span>)</span>
-<span id="cb57-7"><a href="#cb57-7"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(mcdonald)</span>
-<span id="cb57-8"><a href="#cb57-8"></a><span class="co">#-----------------Centralize-Normalize Data</span></span>
-<span id="cb57-9"><a href="#cb57-9"></a>data.norm <span class="ot">&lt;-</span> data</span>
-<span id="cb57-10"><a href="#cb57-10"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(data)){</span>
-<span id="cb57-11"><a href="#cb57-11"></a>  data.norm[,i] <span class="ot">&lt;-</span> data[,i]<span class="sc">-</span><span class="fu">mean</span>(data[,i])</span>
-<span id="cb57-12"><a href="#cb57-12"></a>  data.norm[,i] <span class="ot">&lt;-</span> data.norm[,i]<span class="sc">/</span><span class="fu">sqrt</span>(<span class="fu">sum</span>((data.norm[,i])<span class="sc">^</span><span class="dv">2</span>))</span>
-<span id="cb57-13"><a href="#cb57-13"></a>}</span>
-<span id="cb57-14"><a href="#cb57-14"></a><span class="co">#----------------Separating X and Y(Mort)</span></span>
-<span id="cb57-15"><a href="#cb57-15"></a>x.norm <span class="ot">&lt;-</span> data.norm</span>
-<span id="cb57-16"><a href="#cb57-16"></a>mort.norm <span class="ot">&lt;-</span> x.norm<span class="sc">$</span>MORT</span>
-<span id="cb57-17"><a href="#cb57-17"></a>x.norm<span class="sc">$</span>MORT <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
-<span id="cb57-18"><a href="#cb57-18"></a><span class="co">#----------------Correlation Plot for predictors (X)</span></span>
-<span id="cb57-19"><a href="#cb57-19"></a>res_xx <span class="ot">&lt;-</span> <span class="fu">cor</span>(x.norm, <span class="at">method=</span><span class="st">&quot;pearson&quot;</span>)</span>
-<span id="cb57-20"><a href="#cb57-20"></a><span class="fu">library</span>(corrplot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1"></a><span class="co">#|warning: false</span></span>
+<span id="cb65-2"><a href="#cb65-2"></a><span class="co">#------------------Cleaning the memory</span></span>
+<span id="cb65-3"><a href="#cb65-3"></a><span class="fu">rm</span>(<span class="at">list=</span><span class="fu">ls</span>())</span>
+<span id="cb65-4"><a href="#cb65-4"></a><span class="co">#------------------Reading Data</span></span>
+<span id="cb65-5"><a href="#cb65-5"></a><span class="fu">library</span>(leaps)</span>
+<span id="cb65-6"><a href="#cb65-6"></a><span class="fu">library</span>(<span class="st">&quot;bestglm&quot;</span>)</span>
+<span id="cb65-7"><a href="#cb65-7"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(mcdonald)</span>
+<span id="cb65-8"><a href="#cb65-8"></a><span class="co">#-----------------Centralize-Normalize Data</span></span>
+<span id="cb65-9"><a href="#cb65-9"></a>data.norm <span class="ot">&lt;-</span> data</span>
+<span id="cb65-10"><a href="#cb65-10"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(data)){</span>
+<span id="cb65-11"><a href="#cb65-11"></a>  data.norm[,i] <span class="ot">&lt;-</span> data[,i]<span class="sc">-</span><span class="fu">mean</span>(data[,i])</span>
+<span id="cb65-12"><a href="#cb65-12"></a>  data.norm[,i] <span class="ot">&lt;-</span> data.norm[,i]<span class="sc">/</span><span class="fu">sqrt</span>(<span class="fu">sum</span>((data.norm[,i])<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb65-13"><a href="#cb65-13"></a>}</span>
+<span id="cb65-14"><a href="#cb65-14"></a><span class="co">#----------------Separating X and Y(Mort)</span></span>
+<span id="cb65-15"><a href="#cb65-15"></a>x.norm <span class="ot">&lt;-</span> data.norm</span>
+<span id="cb65-16"><a href="#cb65-16"></a>mort.norm <span class="ot">&lt;-</span> x.norm<span class="sc">$</span>MORT</span>
+<span id="cb65-17"><a href="#cb65-17"></a>x.norm<span class="sc">$</span>MORT <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb65-18"><a href="#cb65-18"></a><span class="co">#----------------Correlation Plot for predictors (X)</span></span>
+<span id="cb65-19"><a href="#cb65-19"></a>res_xx <span class="ot">&lt;-</span> <span class="fu">cor</span>(x.norm, <span class="at">method=</span><span class="st">&quot;pearson&quot;</span>)</span>
+<span id="cb65-20"><a href="#cb65-20"></a><span class="fu">library</span>(corrplot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1"></a><span class="fu">corrplot</span>(res_xx, <span class="at">method =</span> <span class="st">&#39;ellipse&#39;</span>, <span class="at">order =</span> <span class="st">&#39;AOE&#39;</span>, <span class="at">type =</span> <span class="st">&#39;upper&#39;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1"></a><span class="fu">corrplot</span>(res_xx, <span class="at">method =</span> <span class="st">&#39;ellipse&#39;</span>, <span class="at">order =</span> <span class="st">&#39;AOE&#39;</span>, <span class="at">type =</span> <span class="st">&#39;upper&#39;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-corr-xx" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -4493,9 +4627,9 @@ Figure 1: Correlation plot for 15 predictors of the data set
 <section id="principal-component-matrix-z-for-our-data." class="level3">
 <h3 class="anchored" data-anchor-id="principal-component-matrix-z-for-our-data.">Principal component Matrix <span class="math inline">\(Z\)</span>, for our data.</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1"></a>x.pca1 <span class="ot">&lt;-</span> <span class="fu">prcomp</span>(x.norm)</span>
-<span id="cb59-2"><a href="#cb59-2"></a>z <span class="ot">&lt;-</span> x.pca1<span class="sc">$</span>x</span>
-<span id="cb59-3"><a href="#cb59-3"></a><span class="fu">head</span>(z)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1"></a>x.pca1 <span class="ot">&lt;-</span> <span class="fu">prcomp</span>(x.norm)</span>
+<span id="cb67-2"><a href="#cb67-2"></a>z <span class="ot">&lt;-</span> x.pca1<span class="sc">$</span>x</span>
+<span id="cb67-3"><a href="#cb67-3"></a><span class="fu">head</span>(z)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>             PC1        PC2         PC3         PC4         PC5          PC6
 [1,] -0.04987469  0.1101067  0.02961315 -0.14558022  0.09674621  0.003565735
@@ -4524,9 +4658,9 @@ Figure 1: Correlation plot for 15 predictors of the data set
 <section id="principal-components-are-uncorrolated" class="level3">
 <h3 class="anchored" data-anchor-id="principal-components-are-uncorrolated">Principal components are uncorrolated:</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1"></a>res_zz <span class="ot">&lt;-</span> <span class="fu">cor</span>(z, <span class="at">method=</span><span class="st">&quot;pearson&quot;</span>)</span>
-<span id="cb61-2"><a href="#cb61-2"></a><span class="fu">library</span>(corrplot)</span>
-<span id="cb61-3"><a href="#cb61-3"></a><span class="fu">corrplot</span>(res_zz, <span class="at">method =</span> <span class="st">&#39;ellipse&#39;</span>, <span class="at">order =</span> <span class="st">&#39;AOE&#39;</span>, <span class="at">type =</span> <span class="st">&#39;upper&#39;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1"></a>res_zz <span class="ot">&lt;-</span> <span class="fu">cor</span>(z, <span class="at">method=</span><span class="st">&quot;pearson&quot;</span>)</span>
+<span id="cb69-2"><a href="#cb69-2"></a><span class="fu">library</span>(corrplot)</span>
+<span id="cb69-3"><a href="#cb69-3"></a><span class="fu">corrplot</span>(res_zz, <span class="at">method =</span> <span class="st">&#39;ellipse&#39;</span>, <span class="at">order =</span> <span class="st">&#39;AOE&#39;</span>, <span class="at">type =</span> <span class="st">&#39;upper&#39;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-cor-pc" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -4542,10 +4676,10 @@ Figure 2: Correlation plot for 15 Principal Components (Columns of the matrix Z
 </div>
 <p>One question is: after converting the matrix <span class="math inline">\(X\)</span> to <span class="math inline">\(Z\)</span>, how much of the information (variance) from the original matrix <span class="math inline">\(X\)</span> does the principal component matrix <span class="math inline">\(Z\)</span> retain?</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1"></a>variation <span class="ot">&lt;-</span> <span class="dv">100</span><span class="sc">*</span><span class="fu">cbind</span>(x.pca1<span class="sc">$</span>sdev<span class="sc">/</span><span class="fu">sum</span>(x.pca1<span class="sc">$</span>sdev),<span class="fu">rep</span>(<span class="dv">0</span>    ,<span class="dv">15</span>),<span class="fu">cumsum</span>(x.pca1<span class="sc">$</span>sdev)<span class="sc">/</span><span class="fu">sum</span>(x.pca1<span class="sc">$</span>sdev))</span>
-<span id="cb62-2"><a href="#cb62-2"></a><span class="fu">colnames</span>(variation) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Var(%)&quot;</span>,<span class="st">&quot;   &quot;</span>,<span class="st">&quot;CumVar(%)&quot;</span>)</span>
-<span id="cb62-3"><a href="#cb62-3"></a><span class="fu">rownames</span>(variation) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;PC1&quot;</span>,<span class="st">&quot;PC2&quot;</span>,<span class="st">&quot;PC3&quot;</span>,<span class="st">&quot;PC4&quot;</span>,<span class="st">&quot;PC5&quot;</span>,<span class="st">&quot;PC6&quot;</span>,<span class="st">&quot;PC7&quot;</span>,<span class="st">&quot;PC8&quot;</span>,<span class="st">&quot;PC9&quot;</span>,<span class="st">&quot;PC10&quot;</span>,<span class="st">&quot;PC11&quot;</span>,<span class="st">&quot;PC12&quot;</span>,<span class="st">&quot;PC13&quot;</span>,<span class="st">&quot;PC14&quot;</span>,<span class="st">&quot;PC15&quot;</span>)</span>
-<span id="cb62-4"><a href="#cb62-4"></a><span class="fu">round</span>(variation[,<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>)],<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1"></a>variation <span class="ot">&lt;-</span> <span class="dv">100</span><span class="sc">*</span><span class="fu">cbind</span>(x.pca1<span class="sc">$</span>sdev<span class="sc">/</span><span class="fu">sum</span>(x.pca1<span class="sc">$</span>sdev),<span class="fu">rep</span>(<span class="dv">0</span>    ,<span class="dv">15</span>),<span class="fu">cumsum</span>(x.pca1<span class="sc">$</span>sdev)<span class="sc">/</span><span class="fu">sum</span>(x.pca1<span class="sc">$</span>sdev))</span>
+<span id="cb70-2"><a href="#cb70-2"></a><span class="fu">colnames</span>(variation) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Var(%)&quot;</span>,<span class="st">&quot;   &quot;</span>,<span class="st">&quot;CumVar(%)&quot;</span>)</span>
+<span id="cb70-3"><a href="#cb70-3"></a><span class="fu">rownames</span>(variation) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;PC1&quot;</span>,<span class="st">&quot;PC2&quot;</span>,<span class="st">&quot;PC3&quot;</span>,<span class="st">&quot;PC4&quot;</span>,<span class="st">&quot;PC5&quot;</span>,<span class="st">&quot;PC6&quot;</span>,<span class="st">&quot;PC7&quot;</span>,<span class="st">&quot;PC8&quot;</span>,<span class="st">&quot;PC9&quot;</span>,<span class="st">&quot;PC10&quot;</span>,<span class="st">&quot;PC11&quot;</span>,<span class="st">&quot;PC12&quot;</span>,<span class="st">&quot;PC13&quot;</span>,<span class="st">&quot;PC14&quot;</span>,<span class="st">&quot;PC15&quot;</span>)</span>
+<span id="cb70-4"><a href="#cb70-4"></a><span class="fu">round</span>(variation[,<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>)],<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     Var(%) CumVar(%)
 PC1    17.2      17.2
@@ -4567,12 +4701,12 @@ PC15    0.6     100.0</code></pre>
 </div>
 <p>The first principal component (<span class="math inline">\(PC_1\)</span>) only accounts <span class="math inline">\(27\)</span>% of the variation (information) of <span class="math inline">\(X\)</span> matrix, the first two principal components (<span class="math inline">\(PC_1\)</span> and <span class="math inline">\(PC_2\)</span>) account <span class="math inline">\(30\)</span>% of the <span class="math inline">\(X\)</span> matrix variation and so on. All the principal components matrix,<span class="math inline">\(Z=[PC_1, PC_2,\dots,PC_{15}]\)</span>, account <span class="math inline">\(100\)</span>% of the variation of of the <span class="math inline">\(X\)</span> matrix.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ncol</span>(x.norm)</span>
-<span id="cb64-2"><a href="#cb64-2"></a>PVE <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="cn">NA</span>,p)</span>
-<span id="cb64-3"><a href="#cb64-3"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">15</span>){ PVE[i]<span class="ot">&lt;-</span> variation[i,<span class="dv">3</span>] }</span>
-<span id="cb64-4"><a href="#cb64-4"></a><span class="fu">barplot</span>( PVE, <span class="at">names.arg =</span> <span class="dv">1</span><span class="sc">:</span>p, <span class="at">main =</span> <span class="st">&quot;scree plot&quot;</span>, </span>
-<span id="cb64-5"><a href="#cb64-5"></a>         <span class="at">xlab =</span> <span class="st">&quot;number of PCs&quot;</span>, </span>
-<span id="cb64-6"><a href="#cb64-6"></a>         <span class="at">ylab =</span> <span class="st">&quot;% of variance explained&quot;</span> )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ncol</span>(x.norm)</span>
+<span id="cb72-2"><a href="#cb72-2"></a>PVE <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="cn">NA</span>,p)</span>
+<span id="cb72-3"><a href="#cb72-3"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">15</span>){ PVE[i]<span class="ot">&lt;-</span> variation[i,<span class="dv">3</span>] }</span>
+<span id="cb72-4"><a href="#cb72-4"></a><span class="fu">barplot</span>( PVE, <span class="at">names.arg =</span> <span class="dv">1</span><span class="sc">:</span>p, <span class="at">main =</span> <span class="st">&quot;scree plot&quot;</span>, </span>
+<span id="cb72-5"><a href="#cb72-5"></a>         <span class="at">xlab =</span> <span class="st">&quot;number of PCs&quot;</span>, </span>
+<span id="cb72-6"><a href="#cb72-6"></a>         <span class="at">ylab =</span> <span class="st">&quot;% of variance explained&quot;</span> )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-scree" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -4591,9 +4725,9 @@ Figure 3: The scree plot show the cumulative variance explained by principal co
 <h3 class="anchored" data-anchor-id="full-pcr-model">Full PCR Model</h3>
 <p>In the following we have fitted the Principal Component Regression model (<span class="math inline">\(\hat{y} = Z\hat{\beta_z}\)</span>) for our data.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1"></a>data_pcr <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">cbind</span>(z,mort.norm))</span>
-<span id="cb65-2"><a href="#cb65-2"></a>full_pcr <span class="ot">&lt;-</span> <span class="fu">lm</span>(mort.norm <span class="sc">~</span>.,<span class="at">data=</span>data_pcr)</span>
-<span id="cb65-3"><a href="#cb65-3"></a><span class="fu">summary</span>(full_pcr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1"></a>data_pcr <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">cbind</span>(z,mort.norm))</span>
+<span id="cb73-2"><a href="#cb73-2"></a>full_pcr <span class="ot">&lt;-</span> <span class="fu">lm</span>(mort.norm <span class="sc">~</span>.,<span class="at">data=</span>data_pcr)</span>
+<span id="cb73-3"><a href="#cb73-3"></a><span class="fu">summary</span>(full_pcr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -4637,8 +4771,8 @@ F-statistic: 9.542 on 15 and 44 DF,  p-value: 2.193e-09</code></pre>
 <p><span class="math display">\[PC_1, PC_3, PC_6, PC_7, PC_9, PC_{12}\]</span> These subsets of the principal components account for 51% of the variation in the original predictors (<span class="math inline">\(X_i\)</span>s). We may say that the other 49% of the variation is not significantly related to the response variable.</p>
 <p>So the reduced model is:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1"></a>reduced_pcr <span class="ot">&lt;-</span> <span class="fu">lm</span>(mort.norm <span class="sc">~</span>PC1<span class="sc">+</span>PC3<span class="sc">+</span>PC6<span class="sc">+</span>PC7<span class="sc">+</span>PC9<span class="sc">+</span>PC12,<span class="at">data=</span>data_pcr)</span>
-<span id="cb67-2"><a href="#cb67-2"></a><span class="fu">summary</span>(reduced_pcr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1"></a>reduced_pcr <span class="ot">&lt;-</span> <span class="fu">lm</span>(mort.norm <span class="sc">~</span>PC1<span class="sc">+</span>PC3<span class="sc">+</span>PC6<span class="sc">+</span>PC7<span class="sc">+</span>PC9<span class="sc">+</span>PC12,<span class="at">data=</span>data_pcr)</span>
+<span id="cb75-2"><a href="#cb75-2"></a><span class="fu">summary</span>(reduced_pcr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -4668,8 +4802,8 @@ F-statistic: 21.88 on 6 and 53 DF,  p-value: 9.291e-13</code></pre>
 </div>
 <p><span class="math display">\[\hat{MORT}= 0.251PC_1-0.319PC_3+0.339PC_6 -0.279PC_7+0.3PC_9+0.470PC_{12} \]</span> We know each PC is a linear combination of all the original predictors, as follow:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1"></a>v<span class="ot">&lt;-</span> x.pca1<span class="sc">$</span>rotation[,<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">6</span>,<span class="dv">7</span>,<span class="dv">9</span>,<span class="dv">12</span>)]</span>
-<span id="cb69-2"><a href="#cb69-2"></a>v</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1"></a>v<span class="ot">&lt;-</span> x.pca1<span class="sc">$</span>rotation[,<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">6</span>,<span class="dv">7</span>,<span class="dv">9</span>,<span class="dv">12</span>)]</span>
+<span id="cb77-2"><a href="#cb77-2"></a>v</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>              PC1         PC3         PC6           PC7         PC9        PC12
 PREC   0.34547927 -0.02681399  0.18274943  0.0122300215  0.51151942 -0.17601926
@@ -4693,8 +4827,8 @@ HUMID -0.11330703  0.19118053  0.67584786 -0.0009569469 -0.11737073 -0.04085240<
 <section id="model-assumption-for-pcr" class="level3">
 <h3 class="anchored" data-anchor-id="model-assumption-for-pcr">Model Assumption for PCR</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1"></a><span class="fu">plot</span>(reduced_pcr<span class="sc">$</span>fitted.values,reduced_pcr<span class="sc">$</span>residuals, <span class="at">xlab =</span> <span class="st">&quot;fitted values for reduced PCR model&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;residuals of the reduced PCR model&quot;</span>)</span>
-<span id="cb71-2"><a href="#cb71-2"></a><span class="fu">abline</span>(<span class="at">h=</span><span class="dv">0</span>,<span class="at">lty=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">&quot;blue&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1"></a><span class="fu">plot</span>(reduced_pcr<span class="sc">$</span>fitted.values,reduced_pcr<span class="sc">$</span>residuals, <span class="at">xlab =</span> <span class="st">&quot;fitted values for reduced PCR model&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;residuals of the reduced PCR model&quot;</span>)</span>
+<span id="cb79-2"><a href="#cb79-2"></a><span class="fu">abline</span>(<span class="at">h=</span><span class="dv">0</span>,<span class="at">lty=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">&quot;blue&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-residual-ey" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -4709,7 +4843,7 @@ Figure 4: Residual versus fitted values of reduced PCR model
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1"></a><span class="fu">hist</span>(reduced_pcr<span class="sc">$</span>residuals,<span class="at">breaks=</span><span class="dv">13</span>,<span class="at">xlab =</span> <span class="st">&quot;residuals of the reduced PCR model&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1"></a><span class="fu">hist</span>(reduced_pcr<span class="sc">$</span>residuals,<span class="at">breaks=</span><span class="dv">13</span>,<span class="at">xlab =</span> <span class="st">&quot;residuals of the reduced PCR model&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-hist-pcr" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -4724,9 +4858,9 @@ Figure 5: Histogram for the residuals of the reduced PCR model
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1"></a><span class="fu">qqnorm</span>(reduced_pcr<span class="sc">$</span>residuals)</span>
-<span id="cb73-2"><a href="#cb73-2"></a><span class="fu">qqline</span>(reduced_pcr<span class="sc">$</span>residuals)</span>
-<span id="cb73-3"><a href="#cb73-3"></a><span class="fu">shapiro.test</span>(reduced_pcr<span class="sc">$</span>residuals)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1"></a><span class="fu">qqnorm</span>(reduced_pcr<span class="sc">$</span>residuals)</span>
+<span id="cb81-2"><a href="#cb81-2"></a><span class="fu">qqline</span>(reduced_pcr<span class="sc">$</span>residuals)</span>
+<span id="cb81-3"><a href="#cb81-3"></a><span class="fu">shapiro.test</span>(reduced_pcr<span class="sc">$</span>residuals)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Shapiro-Wilk normality test
@@ -4755,8 +4889,8 @@ Figure 6: Normal Q-Q plot for the residuals of the reduced PCR model
 <p>we can also rewrite the model in terms of the original predictors:</p>
 <p><span class="math display">\[\hat{\beta_x}=V\hat{\beta_z}\]</span> where V is the vector of selected eigenvectors corresponding to selected principal components(<span class="math inline">\([PC_1, PC_3, PC_6, PC_7, PC_9, PC_{12}]\)</span>)</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1"></a>beta_x <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(v)<span class="sc">%*%</span><span class="fu">as.matrix</span>(reduced_pcr<span class="sc">$</span>coefficients)[<span class="sc">-</span><span class="dv">1</span>,]</span>
-<span id="cb75-2"><a href="#cb75-2"></a>beta_x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1"></a>beta_x <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(v)<span class="sc">%*%</span><span class="fu">as.matrix</span>(reduced_pcr<span class="sc">$</span>coefficients)[<span class="sc">-</span><span class="dv">1</span>,]</span>
+<span id="cb83-2"><a href="#cb83-2"></a>beta_x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>              [,1]
 PREC   0.224434622
@@ -4793,7 +4927,7 @@ HUMID  0.085606526</code></pre>
 <h2 class="anchored" data-anchor-id="comparison-of-outputs">Comparison of Outputs</h2>
 <p><strong>Add descp here</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1"></a><span class="co"># want to compare the AIC, ridge regression, CP Mallow, and PCA to the full model </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1"></a><span class="co"># want to compare the AIC, ridge regression, CP Mallow, and PCA to the full model </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="deviations" class="level2">

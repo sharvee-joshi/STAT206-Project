@@ -149,6 +149,7 @@ corrplot(cor_matrix, method = "circle", type = "upper", order = "AOE", title = "
 
 ```{r}
 # VIF Calculation
+library(knitr) 
 library(car)
 vif_values <- vif(lm(MORT ~ ., data = data.norm))
 knitr::kable(vif_values, caption = "VIF for Predictors")

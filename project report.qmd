@@ -284,14 +284,7 @@ cat("AIC of reduced model using Mallow's:", AIC(red_cp_model), "\n")
 ```
 
 
-### Akaike's Information Criterion
 
-```{r}
-#subset the modeling using stepAIC, or the Akaike Information Criterion
-library(MASS)
-ols_aic <- stepAIC(ols_model, direction = "both", trace = FALSE)
-summary(ols_aic)
-```
 
 ## Principal Component Regression (PCR)
 

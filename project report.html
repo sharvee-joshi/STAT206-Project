@@ -3262,7 +3262,7 @@ window.Quarto = {
   <li><a href="#ridge-regression" id="toc-ridge-regression" class="nav-link" data-scroll-target="#ridge-regression">Ridge Regression</a></li>
   <li><a href="#variable-selection" id="toc-variable-selection" class="nav-link" data-scroll-target="#variable-selection">Variable Selection</a>
   <ul class="collapse">
-  <li><a href="#mallows-c_p" id="toc-mallows-c_p" class="nav-link" data-scroll-target="#mallows-c_p">Mallow’s <span class="math inline">\(C_p\)</span></a></li>
+  <li><a href="#mallows-c_p-background" id="toc-mallows-c_p-background" class="nav-link" data-scroll-target="#mallows-c_p-background">Mallow’s <span class="math inline">\(C_p\)</span> Background</a></li>
   </ul></li>
   <li><a href="#principal-component-regression-pcr" id="toc-principal-component-regression-pcr" class="nav-link" data-scroll-target="#principal-component-regression-pcr">Principal Component Regression (PCR)</a>
   <ul class="collapse">
@@ -3330,7 +3330,7 @@ window.Quarto = {
 <section id="introduction" class="level1">
 <h1>Introduction</h1>
 <p>Air pollution is not only an environmental concern, but also a public health one. There is substantial evidence that indicates a link in adverse health outcomes, including an increase in mortality rates. Using quantitative analysis, statisticians in the past have been able to determine the exact link as well as use a multitude of methods to study these results.</p>
-<p>One example is seen in the article titled: <em>“Instabilities of Regression Estimates Relating Air Pollution to Mortality”</em>. The article aimed to explore the relationship between air pollution and mortality rates with the use of regression-based estimates. The article authors use a various number of factors, such as rain, temperature, different levels of toxic chemicals, to determine a linear model between air pollution and mortality rates. They used ridge regression to create better coefficient estimates due to the underlying issues the data faced.</p>
+<p>One example is seen in the article titled: <em>“Instabilities of Regression Estimates Relating Air Pollution to Mortality”</em><span class="citation" data-cites="technometrics2">(<a href="#ref-technometrics2" role="doc-biblioref">McDonald 1973</a>)</span>. The article aimed to explore the relationship between air pollution and mortality rates with the use of regression-based estimates. The article authors use a various number of factors, such as rain, temperature, different levels of toxic chemicals, to determine a linear model between air pollution and mortality rates. They used ridge regression to create better coefficient estimates due to the underlying issues the data faced.</p>
 <section id="objective" class="level2">
 <h2 class="anchored" data-anchor-id="objective">Objective</h2>
 <p>The purpose of this report is to replicate the analyses that were conducted in the original study, using techniques that we have discussed in this class, as well as the use of modern technology. An important note is that the article was written in the 1970s, and the data and statistical methods were most likely conducted during that time. We are aware of the advanced technology we have now, and we hope to compare our output versus the original output, and perhaps observe better results. We also hope to learn more about statistical modeling as well as contribute to a better understanding of how methodologies change over time. Finally, we hope to truly understand and do our best to interpret the relationship between air pollution and mortality rates.</p>
@@ -3341,8 +3341,8 @@ window.Quarto = {
 <p>In the article, <em>“Instabilities of Regression Estimates Relating Air Pollution to Mortality”</em>, the author uses multiple linear regression, or the ordinary least squares, as their initial model. The initial, or full model presented was: <span class="math display">\[
 Y = X \underline{\beta} + \underline{\epsilon}
 \]</span> where <span class="math inline">\(Y\)</span> represents the response variable which is the mortality rate collected between 1959 to 1961. <span class="math inline">\(X\)</span> represents a matrix of predictors, and <span class="math inline">\(\underline{\beta}\)</span> are the regression coefficients from the full model.</p>
-<p>The full model was then used to estimate the association between the mortality rates and given predictors, as well as identify any instabilities in the coefficients caused by high multicollinearity. A common pattern seen in this paper is the high multicollinearity found between the predictors, especially in hydrocarbon, nitrogen oxides, and sulfur dioxides. These gases in particular happened to be highly correlated with one another.</p>
-<p>In order to address the multicollinearity, the author turns to two different methods: Ridge Regression and Variable Selection via Mallows’ <span class="math inline">\(C_p\)</span> Criterion. The author first uses ridge regression by adding a penalty term to the Ordinary Least Squares objective function that looks like: <span class="math display">\[
+<p>The full model was then used to estimate the association between the mortality rates and given predictors, as well as identify any instabilities in the coefficients caused by high multi-collinearity. A common pattern seen in this paper is the high multi-collinearity found between the predictors, especially in hydrocarbon, nitrogen oxides, and sulfur dioxides. These gases in particular happened to be highly correlated with one another.</p>
+<p>In order to address the multi-collinearity, the author turns to two different methods: Ridge Regression and Variable Selection via Mallows’ <span class="math inline">\(C_p\)</span> Criterion. The author first uses ridge regression by adding a penalty term to the Ordinary Least Squares objective function that looks like: <span class="math display">\[
 \beta^* = argmin(||Y - X\beta||^2 + k||\beta||^2)
 \]</span> In this case, we see the penalty term, or <span class="math inline">\(k||\beta||^2\)</span>, will shrink the coefficients, which will result in a reduction of variance at the trade off of introducing slight bias. However, this will also result in the estimates stabilizing. The author also uses ridge trace to visualize these changes as the penalty term increases.</p>
 <p>Finally, the author goes onto to use Variable Selection to compare the reduced models by using Mallows’ <span class="math inline">\(C_p\)</span> Criterion and the Ridge Trace Analysis. In order to compare all the models, the author then uses the residual sum of squares, the coefficient of determination, <span class="math inline">\(R^2\)</span>, and the how stable the coefficients were via ridge trace analysis.</p>
@@ -3363,11 +3363,12 @@ Y = X \underline{\beta} + \underline{\epsilon}
 </div>
 </div>
 <p>The author does not exactly explain the thought process behind this, but better results were seen when using the standardized data on Mallows’ <span class="math inline">\(C_p\)</span>.</p>
-<p>By standardizing the data, we were also able to slightly reduce multicollinearity. While this is a major problem we face with the data, standardizing it helped mitigate the problem.</p>
+<p>By standardizing the data, we were also able to slightly reduce multi-collinearity. While this is a major problem we face with the data, standardizing it helped mitigate the problem.</p>
 <p>Finally, we standardized the data, simply because that’s what the author did. We are trying our best to first recreate the analysis the author did, hence, it only made sense to follow his outline, and then diverge with our own results.</p>
 </section>
 <section id="assumptions" class="level2">
 <h2 class="anchored" data-anchor-id="assumptions">Assumptions</h2>
+<p><strong>Add descp here</strong></p>
 </section>
 <section id="reproduction-plan" class="level2">
 <h2 class="anchored" data-anchor-id="reproduction-plan">Reproduction Plan</h2>
@@ -3404,7 +3405,7 @@ Y = X \underline{\beta} + \underline{\epsilon}
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># Summary statistics of the dataset :We first examine the summary statistics of the dataset to understand the overall distribution of the variables, including their mean, median, and range. This helps identify potential issues such as skewness or extreme values that may impact the analysis.</span></span>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># Summary statistics of the dataset </span></span>
 <span id="cb5-2"><a href="#cb5-2"></a><span class="fu">summary</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      PREC            JANT            JULT           OVR65       
@@ -3437,6 +3438,7 @@ Y = X \underline{\beta} + \underline{\epsilon}
  Max.   :278.00   Max.   :73.00   Max.   :1113.2  </code></pre>
 </div>
 </div>
+<p>Looking at the summary statistics above for each of the parameters, our first problem arises that is described in the earlier sections. We need to standardize the data to make sure that the means and medians are closely tied to each other to lessen the variability. Thus, we move forward with centralizing the data.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="co"># in order to replicate the paper, we need to centralize and standardize the data before we continue</span></span>
 <span id="cb7-2"><a href="#cb7-2"></a>data.norm <span class="ot">&lt;-</span> data</span>
@@ -3465,6 +3467,9 @@ Y = X \underline{\beta} + \underline{\epsilon}
 </div>
 </div>
 </div>
+<p>The author defines the response variable, mortality, as the total age adjusted mortality rate. He uses the following formula to describe the overall mortality rate: <span class="math display">\[
+MR = (\sum D_i)(\sum (D_i/R_i))^{-1}
+\]</span> <span class="math inline">\(D_i\)</span> and <span class="math inline">\(R_i\)</span> represent the death and age adjusted death rates, respectively, for the <span class="math inline">\(i^{th}\)</span> category for <span class="math inline">\(i = 1,2,3,4\)</span>. These categories are defined as male white, female white, male non-white, and female non-white. Thus, MR is a collective, or overall mortality rate for the general population from 1959 to 1961. Even without standardizing the response variable, we see that the distribution appears to be normal and follows a nice Gaussian curve. However, we also wish to look at any outliers that may be present in the data.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="co"># Define the OLS model</span></span>
 <span id="cb9-2"><a href="#cb9-2"></a>ols_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(MORT <span class="sc">~</span> ., <span class="at">data =</span> data.norm)</span>
@@ -3480,9 +3485,7 @@ Y = X \underline{\beta} + \underline{\epsilon}
 </div>
 </div>
 </div>
-<p>The author defines the response variable, mortality, as the total age adjusted mortality rate. He uses the following formula to describe the overall mortality rate: <span class="math display">\[
-MR = (\sum D_i)(\sum (D_i/R_i))^{-1}
-\]</span> <span class="math inline">\(D_i\)</span> and <span class="math inline">\(R_i\)</span> represent the death and age adjusted death rates, respectively, for the ith category for <span class="math inline">\(i = 1,2,3,4\)</span>. These categories are defined as male white, female white, male non-white, and female non-white. Thus, MR is a collective, or overall mortality rate for the general population from 1959 to 1961.</p>
+<p><strong>Add descp here</strong></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="co"># Boxplot </span></span>
 <span id="cb10-2"><a href="#cb10-2"></a><span class="fu">library</span>(reshape2)</span>
@@ -3600,6 +3603,7 @@ MR = (\sum D_i)(\sum (D_i/R_i))^{-1}
 </table>
 </div>
 </div>
+<p><strong>Add descp here</strong></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="co"># Scatterplot: Mortality vs. Pollution Variables</span></span>
 <span id="cb19-2"><a href="#cb19-2"></a>hc <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x =</span> HC, <span class="at">y =</span> MORT)) <span class="sc">+</span></span>
@@ -3649,6 +3653,21 @@ MR = (\sum D_i)(\sum (D_i/R_i))^{-1}
 </div>
 </div>
 </div>
+<p>The next graph shows a scatter-plot for each of the chemicals that were collected and comparing them to the mortality rate, or the response. The purpose of this graph was to simply see what each chemical is doing the mortality rate individually.</p>
+<p>Looking at the top left graph, we see Mortality versus Hydrocarbon Pollution. There seems to be a slightly negative slope, indicating a negative correlation between the two. The effect is weak with a large amount of variability, so it’s hard to take anything from this.</p>
+<p>In the next graph, we take a look at the mortality rates against the <span class="math inline">\(NO_x\)</span> pollution. The slope line appears to be basically flat, indicating no significant linear relationship b between the two.</p>
+<p>Finally, we look at mortality rates versus the <span class="math inline">\(SO_2\)</span> pollution. Here, we see a bit more of a positive slope line appearing, indicating that higher <span class="math inline">\(SO_2\)</span> pollution levels could be associated with increased mortality rates.</p>
+<p>What is interesting to note is that the author himself mentions that using these chemicals in particular would not yield to anything.</p>
+<div class="callout callout-style-simple callout-none no-icon">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>“For example <span class="math inline">\(SO_2\)</span> is highly correlated with certain types of particulates and HC is closely tied to carbon monoxide and lead salts. Thus one cannot demonstrate a specific cause and effect even though the analysis quantifies the relationship.”</p>
+</div>
+</div>
+</div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="co"># Group DENS into categories to simplify the plot</span></span>
 <span id="cb21-2"><a href="#cb21-2"></a>data<span class="sc">$</span>DENS_group <span class="ot">&lt;-</span> <span class="fu">cut</span>(data<span class="sc">$</span>DENS, <span class="at">breaks =</span> <span class="dv">5</span>, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;Low&quot;</span>, <span class="st">&quot;Medium-Low&quot;</span>, <span class="st">&quot;Medium&quot;</span>, <span class="st">&quot;Medium-High&quot;</span>, <span class="st">&quot;High&quot;</span>))</span>
@@ -3675,21 +3694,7 @@ MR = (\sum D_i)(\sum (D_i/R_i))^{-1}
 </div>
 </div>
 </div>
-<p>The next graph shows a scatter-plot for each of the chemicals that were collected and comparing them to the mortality rate, or the response. The purpose of this graph was to simply see what each chemical is doing the mortality rate individually.</p>
-<p>Looking at the top left graph, we see Mortality versus Hydrocarbon Pollution. There seems to be a slightly negative slope, indicating a negative correlation between the two. The effect is weak with a large amount of variability, so it’s hard to take anything from this.</p>
-<p>In the next graph, we take a look at the mortality rates against the <span class="math inline">\(NO_x\)</span> pollution. The slope line appears to be basically flat, indicating no significant linear relationship b between the two.</p>
-<p>Finally, we look at mortality rates versus the <span class="math inline">\(SO_2\)</span> pollution. Here, we see a bit more of a positive slope line appearing, indicating that higher <span class="math inline">\(SO_2\)</span> pollution levels could be associated with increased mortality rates.</p>
-<p>What is interesting to note is that the author himself mentions that using these chemicals in particular would not yield to anything.</p>
-<div class="callout callout-style-simple callout-none no-icon">
-<div class="callout-body d-flex">
-<div class="callout-icon-container">
-<i class="callout-icon no-icon"></i>
-</div>
-<div class="callout-body-container">
-<p>“For example <span class="math inline">\(SO_2\)</span> is highly correlated with certain types of particulates and HC is closely tied to carbon monoxide and lead salts. Thus one cannot demonstrate a specific cause and effect even though the analysis quantifies the relationship.”</p>
-</div>
-</div>
-</div>
+<p><strong>Add descp here</strong></p>
 </section>
 <section id="the-full-model" class="level2">
 <h2 class="anchored" data-anchor-id="the-full-model">The Full Model</h2>
@@ -3780,7 +3785,7 @@ data:  ols_model$residuals
 W = 0.98274, p-value = 0.5548</code></pre>
 </div>
 </div>
-<p>Based off of the residuals plot, we do not see any patterns present. Moving onto the qq-plot, we do some slight curvature towards the end of the line, maybe indicating that the addition of a squared value in the predictors could be useful. The Shapiro Wilk’s test is satisfied, so our assumptions are met, with some deviation in the linear aspect.</p>
+<p>Based off of the residuals plot, we do not see any patterns present. Moving onto the qq-plot, we do some slight curvature towards the end of the line, maybe indicating that the addition of a squared value in the predictors could be useful. The Shapiro Wilk’s test is satisfied; our assumptions are met, with some deviation in the linear aspect.</p>
 </section>
 <section id="ridge-regression" class="level2">
 <h2 class="anchored" data-anchor-id="ridge-regression">Ridge Regression</h2>
@@ -3801,7 +3806,7 @@ W = 0.98274, p-value = 0.5548</code></pre>
 <span id="cb32-5"><a href="#cb32-5"></a>optimal_lambda <span class="ot">&lt;-</span> cv_ridge<span class="sc">$</span>lambda.min</span>
 <span id="cb32-6"><a href="#cb32-6"></a>optimal_lambda</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.01593926</code></pre>
+<pre><code>[1] 0.02107076</code></pre>
 </div>
 </div>
 <p>Step 2: Fit Ridge Regression Model</p>
@@ -3812,22 +3817,22 @@ W = 0.98274, p-value = 0.5548</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>16 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
                        s0
-(Intercept)  4.487196e-17
-PREC         2.635390e-01
-JANT        -1.993559e-01
-JULT        -1.153202e-01
-OVR65       -6.952178e-02
-POPN        -4.255811e-02
-EDUC        -1.193344e-01
-HOUS        -9.520969e-02
-DENS         1.192540e-01
-NONW         4.805672e-01
-WWDRK       -3.643612e-02
-POOR         3.340827e-02
-HC          -6.103412e-02
-NOX          5.546889e-02
-SOx          2.453254e-01
-HUMID        2.961385e-02</code></pre>
+(Intercept)  4.525589e-17
+PREC         2.522108e-01
+JANT        -1.812644e-01
+JULT        -9.752542e-02
+OVR65       -6.064194e-02
+POPN        -2.155978e-02
+EDUC        -1.153643e-01
+HOUS        -9.584172e-02
+DENS         1.219707e-01
+NONW         4.474025e-01
+WWDRK       -3.500516e-02
+POOR         3.896316e-02
+HC          -5.147412e-02
+NOX          4.758615e-02
+SOx          2.446573e-01
+HUMID        3.215296e-02</code></pre>
 </div>
 </div>
 <p>Step 3: Compare OLS and Ridge Coefficients</p>
@@ -3861,83 +3866,83 @@ HUMID        2.961385e-02</code></pre>
 <tr class="even">
 <td style="text-align: left;">PREC</td>
 <td style="text-align: right;">0.3058371</td>
-<td style="text-align: right;">0.2635390</td>
+<td style="text-align: right;">0.2522108</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">JANT</td>
 <td style="text-align: right;">-0.3167439</td>
-<td style="text-align: right;">-0.1993559</td>
+<td style="text-align: right;">-0.1812644</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">JULT</td>
 <td style="text-align: right;">-0.2374017</td>
-<td style="text-align: right;">-0.1153202</td>
+<td style="text-align: right;">-0.0975254</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">OVR65</td>
 <td style="text-align: right;">-0.2134310</td>
-<td style="text-align: right;">-0.0695218</td>
+<td style="text-align: right;">-0.0606419</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">POPN</td>
 <td style="text-align: right;">-0.2322663</td>
-<td style="text-align: right;">-0.0425581</td>
+<td style="text-align: right;">-0.0215598</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">EDUC</td>
 <td style="text-align: right;">-0.2331429</td>
-<td style="text-align: right;">-0.1193344</td>
+<td style="text-align: right;">-0.1153643</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">HOUS</td>
 <td style="text-align: right;">-0.0538151</td>
-<td style="text-align: right;">-0.0952097</td>
+<td style="text-align: right;">-0.0958417</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">DENS</td>
 <td style="text-align: right;">0.0841631</td>
-<td style="text-align: right;">0.1192540</td>
+<td style="text-align: right;">0.1219707</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">NONW</td>
 <td style="text-align: right;">0.6395617</td>
-<td style="text-align: right;">0.4805672</td>
+<td style="text-align: right;">0.4474025</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">WWDRK</td>
 <td style="text-align: right;">-0.0138715</td>
-<td style="text-align: right;">-0.0364361</td>
+<td style="text-align: right;">-0.0350052</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">POOR</td>
 <td style="text-align: right;">-0.0112112</td>
-<td style="text-align: right;">0.0334083</td>
+<td style="text-align: right;">0.0389632</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">HC</td>
 <td style="text-align: right;">-0.9938278</td>
-<td style="text-align: right;">-0.0610341</td>
+<td style="text-align: right;">-0.0514741</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">NOX</td>
 <td style="text-align: right;">0.9981482</td>
-<td style="text-align: right;">0.0554689</td>
+<td style="text-align: right;">0.0475862</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">SOx</td>
 <td style="text-align: right;">0.0878937</td>
-<td style="text-align: right;">0.2453254</td>
+<td style="text-align: right;">0.2446573</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">HUMID</td>
 <td style="text-align: right;">0.0092198</td>
-<td style="text-align: right;">0.0296138</td>
+<td style="text-align: right;">0.0321530</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-<p>Step 4: Multicollinearity Analysis</p>
+<p>Step 4: Multi-Collinearity Analysis</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a><span class="co">#Find VIF</span></span>
 <span id="cb37-2"><a href="#cb37-2"></a><span class="fu">library</span>(car)</span>
@@ -4062,7 +4067,7 @@ HUMID        2.961385e-02</code></pre>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Ridge</td>
-<td style="text-align: right;">0.0043635</td>
+<td style="text-align: right;">0.0044862</td>
 </tr>
 </tbody>
 </table>
@@ -4071,12 +4076,14 @@ HUMID        2.961385e-02</code></pre>
 </section>
 <section id="variable-selection" class="level2">
 <h2 class="anchored" data-anchor-id="variable-selection">Variable Selection</h2>
-<section id="mallows-c_p" class="level3">
-<h3 class="anchored" data-anchor-id="mallows-c_p">Mallow’s <span class="math inline">\(C_p\)</span></h3>
+<section id="mallows-c_p-background" class="level3">
+<h3 class="anchored" data-anchor-id="mallows-c_p-background">Mallow’s <span class="math inline">\(C_p\)</span> Background</h3>
 <p>In order to start the process of eliminating variables, the author introduces Mallows’ <span class="math inline">\(C_p\)</span>. This statistics estimates the sum of squared biases plus the squared random errors in the response variable at all the data points. The statistic is calculated using: <span class="math display">\[
 C_p = \dfrac{RSS_p}{\hat{\sigma^2}} - (n- 2p)
-\]</span> Note, that <span class="math inline">\(p\)</span> is equal to the number of parameters, which includes the response variable. <span class="math inline">\(RSS_p\)</span> is the residual sum of squares for a particular regression being considered, and <span class="math inline">\(\hat{\sigma^2\)</span> is the MSE value, or the mean square value of the given regression.</p>
-<p>The author goes into length about how he was able to calculate the statistic by using a certain algorithm described in <em>Technometrics</em>, an article written by LaMotte and Hocking. This algorithm, from the sounds of it, takes over 32,000 total possible regression and looks at the best equations from these. His result was that they found approximately 4.5% of the 32,000 possibilities to yield a low <span class="math inline">\(C_p\)</span> value. Using modern technology, this algorithm is automatically implemented for us by using the function <code>regsubsets</code>. By using this function, we’re able to quickly fish through the different <span class="math inline">\(C_p\)</span> values and find the best fitting model. Essentially, we would like to find a <span class="math inline">\(C_p\)</span> value that is close to the given number of parameters for that model. For example, the paper notes that their minimum <span class="math inline">\(C_p\)</span> value was 3.55, so they picked the model with the “best” set of five variables. Using this idea, we construct our own <span class="math inline">\(C_p\)</span> and conduct a test.</p>
+\]</span> Note, that <span class="math inline">\(p\)</span> is equal to the number of parameters, which includes the response variable. <span class="math inline">\(RSS_p\)</span> is the residual sum of squares for a particular regression being considered, and <span class="math inline">\(\hat{\sigma^2}\)</span> is the MSE value, or the mean square value of the given regression.</p>
+<p>The author goes into length about how he was able to calculate the statistic by using a certain algorithm described in <em>Technometrics: Computational Efficiency in the Selection of Regression Variables</em><span class="citation" data-cites="technometrics1">(<a href="#ref-technometrics1" role="doc-biblioref">LaMotte 1970</a>)</span>, an article written by LaMotte and Hocking. This algorithm takes over 32,000 total possible regression and looks at the best equations from these. His result was that they found approximately 4.5% of the 32,000 possibilities to yield a low <span class="math inline">\(C_p\)</span> value. Using modern technology, this algorithm is automatically implemented for us by using the function <code>regsubsets</code>. By using this function, we’re able to quickly fish through the different <span class="math inline">\(C_p\)</span> values and find the best fitting model. Essentially, we would like to find a <span class="math inline">\(C_p\)</span> value that is close to the given number of parameters for that model. For example, the paper notes that their minimum <span class="math inline">\(C_p\)</span> value was 3.55, so they picked the model with the “best” set of five variables. Using this idea, we construct our own <span class="math inline">\(C_p\)</span> and conduct a test.</p>
+<section id="choosing-the-number-of-predictors" class="level4">
+<h4 class="anchored" data-anchor-id="choosing-the-number-of-predictors">Choosing the Number of Predictors</h4>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a><span class="co">#plotting mallow&#39;s Cp</span></span>
 <span id="cb41-2"><a href="#cb41-2"></a></span>
@@ -4255,6 +4262,9 @@ C_p = \dfrac{RSS_p}{\hat{\sigma^2}} - (n- 2p)
 </div>
 </div>
 <p>The table above shows us first, the number of predictors in a given model, the <span class="math inline">\(C_p\)</span> value for that model, the number of parameters that would be in the model, as in including the intercept, and then finally, the absolute value for the difference of the statistic value and the number of parameters. We can see that the best model will be one that has 14 parameters in total, or 13 predictor variables and 1 intercept variable. That is because the difference value is the smallest. Thus, we can move on to determining which model this is and looking at the analysis of it.</p>
+</section>
+<section id="the-reduced-model" class="level4">
+<h4 class="anchored" data-anchor-id="the-reduced-model">The Reduced Model</h4>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a><span class="co">#Step 1: find out the optimal number of coefficients according to CP, then use that to create a variable for the predictors</span></span>
 <span id="cb43-2"><a href="#cb43-2"></a>min_cp_index <span class="ot">&lt;-</span> <span class="fu">which.min</span>(cp_dat<span class="sc">$</span>cp_diff)</span>
@@ -4308,7 +4318,16 @@ Multiple R-squared:  0.7648,    Adjusted R-squared:  0.6983
 F-statistic: 11.51 on 13 and 46 DF,  p-value: 1.885e-10</code></pre>
 </div>
 </div>
-<p>We have now calculated our reduced model. In this case, the Mallows’ <span class="math inline">\(C_p\)</span> value decided that the model that was “best” would be one without two predictor variables: the percent employment in white-collar occupations in 1960, or WWDRK, and the percent of families with income under 3,000 dollars in 1960, or POOR. This seems to make sense as in the full model, both these coefficients had low partial t-test p-values, indicating little significance to the model. We also get an <span class="math inline">\(R^2\)</span> value equal to 0.7648, meaning that our reduced model using <span class="math inline">\(C_p\)</span> actually performed better than the authors. This is most likely due to the fact that the author ran 32,000 models of different combinations of predictors, whereas I only ran it on a random model for a given number of predictors.</p>
+<p>We have now calculated our reduced model. In this case, the Mallows’ <span class="math inline">\(C_p\)</span> value decided that the model that was “best” would be one without two predictor variables: the percent employment in white-collar occupations in 1960, or WWDRK, and the percent of families with income under 3,000 dollars in 1960, or POOR. The model looks like this: <span class="math display">\[
+\begin{align}
+\hat{MORT}&amp;= 3.195 e^{-17} + 0.3093(PREC)-0.3254(JANT)-0.2388(JULT)- 0.2196(OVR65)-0.2312(POPN)\\
+&amp;-0.2434(EDUC)-0.0475(HOUS)+0.08338(DENS)+0.6312(NONW)\\
+&amp;-1.0078(HC)+1.017(NO_x)+0.08789(SO_2)+0.0132(HUMID)
+\end{align}
+\]</span> This seems to make sense as in the full model, both these coefficients had low partial t-test p-values, indicating little significance to the model. We also get an <span class="math inline">\(R^2\)</span> value equal to 0.7648, meaning that our reduced model using <span class="math inline">\(C_p\)</span> actually performed better than the authors. I am not entirely sure why my model appeared to do better than the authors; the author took the time to run every single time of model and the various combinations, but perhaps that was not needed.</p>
+</section>
+<section id="reduced-model-assumptions" class="level4">
+<h4 class="anchored" data-anchor-id="reduced-model-assumptions">Reduced Model Assumptions</h4>
 <p>Now let’s see if our reduced model using Mallows’ <span class="math inline">\(C_p\)</span> checks the assumptions.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb48"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1"></a><span class="co">#checking the residuals for the reduced CP Model</span></span>
@@ -4351,7 +4370,7 @@ data:  red_cp_model$residuals
 W = 0.98396, p-value = 0.6164</code></pre>
 </div>
 </div>
-<p>Our assumptions still appear to be met with the reduced model, so we can move forward to check on the multicollinearity, although there probably won’t be much of a difference.</p>
+<p>Our assumptions still appear to be met with the reduced model, so we can move forward to check on the multi-collinearity.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb52"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1"></a><span class="fu">library</span>(reshape2)</span>
 <span id="cb52-2"><a href="#cb52-2"></a>data_reduced <span class="ot">&lt;-</span> data.norm[, best_predictors]</span>
@@ -4382,7 +4401,7 @@ W = 0.98396, p-value = 0.6164</code></pre>
 </div>
 </div>
 </div>
-<p>As expected, multicollinearity stayed approximately the same. While the removal of two variables did make the graph slightly better, there still is a good amount of variables present, especially ones that are highly correlated together such as the chemical pollution variables. Finally, we compare the AIC values of the full model versus the reduced model, using Mallows’ <span class="math inline">\(C_p\)</span>, to see if the reduced model performs better.</p>
+<p>As expected, multi-collinearity stayed approximately the same. While the removal of two variables did make the graph slightly better, there still is a good amount of variables present, especially ones that are highly correlated together such as the chemical pollution variables. Finally, we compare the AIC values of the full model versus the reduced model, using Mallows’ <span class="math inline">\(C_p\)</span>, to see if the reduced model performs better.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb53"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1"></a><span class="co">#compare to full model - OLS model</span></span>
 <span id="cb53-2"><a href="#cb53-2"></a></span>
@@ -4398,13 +4417,14 @@ W = 0.98396, p-value = 0.6164</code></pre>
 <p>Thankfully, it appears that the reduced model is actually performing better than the full model as the AIC value is lower. It does appear as though getting rid of WWDRK and POOR appeared to help the model perform better. While I did deviate from the author’s original algorithm for variable selection, I do believe I ran a more efficient code: running through over 32,000 different models to only get a lower performing model did not seem plausible to me, and while my code itself may not be as thorough as the author’s, it definitely is more efficient and therefore less computationally intense for someone who would want to recreate this code.</p>
 </section>
 </section>
+</section>
 <section id="principal-component-regression-pcr" class="level2">
 <h2 class="anchored" data-anchor-id="principal-component-regression-pcr">Principal Component Regression (PCR)</h2>
 <section id="motivation-for-pcr" class="level3">
 <h3 class="anchored" data-anchor-id="motivation-for-pcr">Motivation for PCR</h3>
-<p>In a linear regression model, when the predictors (<span class="math inline">\(X_i\)</span>s) are linearly dependent or highly correlated, we say that multicollinearity exists in the model, which causes the following issue for the fitted multiple regression model:</p>
+<p>In a linear regression model, when the predictors (<span class="math inline">\(X_i\)</span>s) are linearly dependent or highly correlated, we say that multi-collinearity exists in the model, which causes the following issue for the fitted multiple regression model:</p>
 <ul>
-<li>The estimate of any parameter, say <span class="math inline">\(\hat{\beta_2}\)</span>, depends on all the variables included in the model. For example, <span class="math inline">\(\hat{\beta_2}\)</span> does not merely reflect the effect of the <span class="math inline">\(X_2\)</span> variable on the response variable <span class="math inline">\(Y\)</span>. Due to multicollinearity, the other variables affect the estimate of the parameter <span class="math inline">\(\beta_2\)</span>. As a result, our inference about the effect of each predictor on the response is not reliable.</li>
+<li>The estimate of any parameter, say <span class="math inline">\(\hat{\beta_2}\)</span>, depends on all the variables included in the model. For example, <span class="math inline">\(\hat{\beta_2}\)</span> does not merely reflect the effect of the <span class="math inline">\(X_2\)</span> variable on the response variable <span class="math inline">\(Y\)</span>. Due to multi-collinearity, the other variables affect the estimate of the parameter <span class="math inline">\(\beta_2\)</span>. As a result, our inference about the effect of each predictor on the response is not reliable.</li>
 </ul>
 <p>We have 15 predictors in our dataset, and we want to investigate the relationship between them and the response variable (mortality). There is a high correlation between most of the predictors. <a href="#fig-corr-xx" class="quarto-xref">Figure 1</a> illustrates this:</p>
 <div class="cell">
@@ -4455,11 +4475,11 @@ Figure 1: Correlation plot for 15 predictors of the data set
 </div>
 </div>
 </div>
-<p>In the following, we present a Principal Component Regression model with all fifteen predictors as an alternative model for overcoming multicollinearity and compare it with the final Ridge Regression model suggested by the authors.</p>
+<p>In the following, we present a Principal Component Regression model with all fifteen predictors as an alternative model for overcoming multi-collinearity and compare it with the final Ridge Regression model suggested by the authors.</p>
 </section>
 <section id="modeling-pcr" class="level3">
 <h3 class="anchored" data-anchor-id="modeling-pcr">Modeling PCR</h3>
-<p>In PCR, we try to provide a weighted linear combination of the predictors (<span class="math inline">\(X_i\)</span>s) like: <span class="math display">\[Z_k = v_{k1}X_1 + v_{k2}X_2 + \dots + v_{kp}X_p\]</span> We then replace the correlated variables <span class="math inline">\([X_1, X_2, \dots, X_p]\)</span> with <span class="math inline">\(Z = [Z_1, Z_2, \dots, Z_p]\)</span> which are uncorrelated, so the regression model <span class="math inline">\(y = Z\beta_z + \epsilon\)</span> does not suffer from multicollinearity.</p>
+<p>In PCR, we try to provide a weighted linear combination of the predictors (<span class="math inline">\(X_i\)</span>s) like: <span class="math display">\[Z_k = v_{k1}X_1 + v_{k2}X_2 + \dots + v_{kp}X_p\]</span> We then replace the correlated variables <span class="math inline">\([X_1, X_2, \dots, X_p]\)</span> with <span class="math inline">\(Z = [Z_1, Z_2, \dots, Z_p]\)</span> which are uncorrelated, so the regression model <span class="math inline">\(y = Z\beta_z + \epsilon\)</span> does not suffer from multi-collinearity.</p>
 <p>First, we need to centralize and normalize all the variables for PCR. In the following, we assume the <span class="math inline">\(y\)</span> and <span class="math inline">\(X\)</span> variables are all centralized and normalized and show how to find the <span class="math inline">\(Z\)</span> matrix.</p>
 <p><span class="math display">\[\text{Correlated: $X=[X_1, X_2, \dots, X_p]$ $\xrightarrow{\text{PC Analysis}}$ Uncorrelated: $Z=[Z_1, Z_2, \dots, Z_p]$}\]</span></p>
 <p>We call <span class="math inline">\(Z_i\)</span> the i-th <strong>principal component</strong> of matrix <span class="math inline">\(X\)</span>.</p>
@@ -4771,6 +4791,7 @@ HUMID  0.085606526</code></pre>
 <h1>Results</h1>
 <section id="comparison-of-outputs" class="level2">
 <h2 class="anchored" data-anchor-id="comparison-of-outputs">Comparison of Outputs</h2>
+<p><strong>Add descp here</strong></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb77"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1"></a><span class="co"># want to compare the AIC, ridge regression, CP Mallow, and PCA to the full model </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -4785,19 +4806,22 @@ HUMID  0.085606526</code></pre>
 <h2 class="anchored" data-anchor-id="challenges">Challenges</h2>
 <p>There were a plethora of challenges we faced throughout this project. For one, having to figure out how the data was centralized was the biggest step. In order to even start the project and make our deviations, we needed to make sure our full model, or the OLS model, matched the authors. When first creating the code for an OLS model, we made the mistake of not centralizing the data, thus getting extremely different results for the ridge regression, OLS, and <span class="math inline">\(C_p\)</span> Mallows’ models. After debriefing with the team, we realized our crucial mistake, and had to go back and fix the original data to match the data the author used. The author had very briefly mentioned this step, leading to our oversight.</p>
 <p>The next main challenge was conducting our analysis in a way that would match the authors. This main challenge was especially prevalent in the <span class="math inline">\(C_p\)</span> Mallows’ model, and led to the deviation of choosing to simply use this method another way instead of how the author did it. This leads to the main problem we faced in the project: trying to stay as authentic and close to the article as possible, while also realizing that there are better ways of conducting tests that are different from the way he did it.</p>
+<p>Finally, one of the biggest challenges we faced was getting GitHub to cooperate. I will not go too much into this topic, however, GitHub on RStudio was difficult and most of the time, we had to separately paste our own work into different files as committing, pushing, and pulling did not work well for us.</p>
 </section>
 </section>
 <section id="conclusion" class="level1">
 <h1>Conclusion</h1>
 <section id="summary" class="level2">
 <h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<p><strong>Add descp here</strong></p>
 </section>
 <section id="future-work" class="level2">
 <h2 class="anchored" data-anchor-id="future-work">Future Work</h2>
+<p>In the future, we would really like to address the multi-collinearity problem. This seemed to be the biggest problem in the data, and despite running three different kinds of analyses’ to address the problem, the multi-collinearity situation was never resolved. If we were to continue with the project, it would be nice to divert our attention on addressing this rather than spending time recreating the article. It would be nice to see if, perhaps, creating a new interaction term between the chemical pollutants, HC, <span class="math inline">\(NO_x\)</span>, and <span class="math inline">\(SO_x\)</span> could resolve it. Another interaction term between precipitation and January temperatures could also be created, as there as multi-collinearity between those two as well. By adding these terms into the model and running our tests again with those two terms adding, it would be interesting to see what results we would achieve, and if in fact, the multi-collinearity lessens.</p>
 </section>
 <section id="acknowledgements" class="level2">
 <h2 class="anchored" data-anchor-id="acknowledgements">Acknowledgements</h2>
-<p>We’d like to first start off by thanking Dr. Landeros for the opportunity to recreate an article as profound as this one.</p>
+<p>We’d like to first start off by thanking Dr. Landeros for the opportunity to recreate an article as profound as this one. While time was limited, and patience was tested via RStudio, this was an incredibly fruitful project that taught students how to dive deeper into statistical computing. Based off of the lectures in STAT206, we were able to conduct a well structured analysis on older data that gave us results similar, if not better, results than the original. Our code, while sometimes robust, has better formatting and is more structured than what it would have been without the helpful tips from our professor. We thank you for taking the time to read our report.</p>
 
 </section>
 </section>
@@ -4805,6 +4829,12 @@ HUMID  0.085606526</code></pre>
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-christensen2019statistical" class="csl-entry" role="listitem">
 Christensen, Ronald. 2019. <span>“Statistical Learning: A Second Course in Regression.”</span>
+</div>
+<div id="ref-technometrics1" class="csl-entry" role="listitem">
+LaMotte, LR. 1970. <span>“Technometrics: Computational Efficiency in the Selection of Regression Variables.”</span>
+</div>
+<div id="ref-technometrics2" class="csl-entry" role="listitem">
+McDonald, Gary C. 1973. <span>“Technometrics: Instabilities of Regression Estimates Relating Air Pollution to Mortality.”</span>
 </div>
 </div></section></div></main>
 <!-- /main column -->

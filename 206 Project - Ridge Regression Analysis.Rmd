@@ -1,0 +1,183 @@
+---
+title: "Ridge Regression Analysis"
+author: "Makena Grigsby"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Ridge Regression
+
+Step 1: Find the Optimal Lambda 
+
+```{r}
+library(MASS)
+library(glmnet)
+
+Y <- data.norm$MORT
+X <- as.matrix(data.norm[ , !names(data.norm) %in% "MORT"])
+
+
+#Cross-Validation
+cv_ridge <- cv.glmnet(X, Y, alpha = 0) 
+optimal_lambda <- cv_ridge$lambda.min
+
+optimal_lambda
+```
+
+Cross-validation was used to identify the optimal penalty parameter $\lambda$. This was done with the use of the cv.glmnet function, which helped the balance between bias and variance trade-offs. 
+
+- This process directly addresses the instability of coefficients observed in the OLS model.
+
+
+Step 2: Fit Ridge Regression Model
+```{r}
+ridge_model <- glmnet(X, Y, alpha = 0, lambda = optimal_lambda)
+
+ridge_coefficients <- coef(ridge_model)
+
+ridge_coefficients
+
+```
+
+
+After finding the optimal $\lambda$, the Ridge Regression model was fit using glmnet. This helped with stabilizing coefficients, it was particularly notable with high collinear predictors (e.g. NOX, HC). Reducing the influence of these variables without eliminating them. 
+
+- \textbf{Key Result:} Ridge Regression showed coefficients with a reduced variability. Showing a stabilized model. 
+
+Step 3: Compare OLS and Ridge Coefficients
+
+```{r}
+library(knitr)
+library(kableExtra)
+ols_coefficients <- coef(ols_model)
+
+# Compare 
+comparison <- data.frame(
+  Variable = rownames(ridge_coefficients),
+  OLS = as.numeric(ols_coefficients),
+  Ridge = as.numeric(ridge_coefficients)
+)
+
+#print(comparison)
+kable(comparison, theme = "Minimal") 
+
+```
+
+This comparision showed shrinkage of coefficients in Ridge regression. 
+
+
+Step 4: Multicollinearity Analysis
+```{r}
+#Find VIF
+library(car)
+vif_values <- vif(ols_model)
+
+#put in appendix
+kable(vif_values)
+plot(vif_values)
+```
+
+Variance Inflation Factors (VIF) were calculated for the OLS model to quantify multicollinearity. 
+
+- Predictors such as NOX and HC exhibited very hight VIF values (>100), showing there is a severe multicollinear relationship. 
+
+- The Ridge Regression shows this issues are reduce, as shown by the stabilizatioon of coefficients. 
+
+
+Step 5: OLS Correlation Heatmap
+
+```{r}
+cor_matrix <- cor(data.norm)
+
+ols_cor <- cor(X)
+heatmap(ols_cor, symm = TRUE, main = "OLS Correlation Heatmap")
+```
+
+This heatmap showed correlation among predictors, particularly between pollution variables. These correlations take from the importance of the Ridge Regression. 
+
+
+Step 6: Predictive Accuracy
+
+```{r}
+ols_predictions <- predict(ols_model, data.norm)
+
+ridge_predictions <- predict(ridge_model, s = optimal_lambda, newx = X)
+
+#Find MSE
+ols_mse <- mean((Y - ols_predictions)^2)
+ridge_mse <- mean((Y - ridge_predictions)^2)
+
+#data.frame(Method = c("OLS", "Ridge"), MSE = c(ols_mse, ridge_mse))
+kable(data.frame(Method = c("OLS", "Ridge"), MSE = c(ols_mse, ridge_mse)))
+```
+
+Model performance was evaluated using the Mean Square Error (MSE):
+
+- OLS MSE: 0.0039 
+
+- Ridge MSE: 0.0045
+
+
+Step 7: Ridge Trace Plot
+
+```{r}
+library(plotly)
+
+ridge_traces <- glmnet(X, Y, alpha = 0, lambda = cv_ridge$lambda)
+trace_coefficients <- as.matrix(coef(ridge_traces))
+
+plot_data <- data.frame(
+  Lambda = rep(cv_ridge$lambda, each = nrow(trace_coefficients)),
+  Coefficient = as.vector(trace_coefficients),
+  Variable = rep(rownames(trace_coefficients), times = length(cv_ridge$lambda))
+)
+
+ggplot(plot_data, aes(x = log(Lambda), y = Coefficient, color = Variable)) +
+  geom_line() +
+  labs(
+    title = "Ridge Trace Plot",
+    x = "Log(Optimal Lambda)",
+    y = "Coefficient"
+  ) +
+  theme_minimal()
+#note: this ridge trace plot looks like the timeline from LOKI
+
+```
+
+The Ridge trace plot illustrated the progression of coefficients as $\lambda$ increased. 
+
+- As shown in the graph, variables experienced significant shrinkage, showing the model's ability to penalize less relevant predictors.
+
+- Stabilization of more key predictors (e.g. PREC, DENS), show there relevance to the response variable with a lower $\lambda$ value. 
+
+
+## Interpretation
+
+Pollution Variables: 
+
+- The Ridge regression showed a lowered influence of multicollinear pollution variables. Such as, NOX, HC, and SOX, aligning with the expected outcomes. 
+
+Demographic Factors: 
+
+- These predictors, such as, NONW (percent nonwhite population) and OVR65 (percent population over 65) showed retention in their significance. Which showed an emphasis in socioeconomic and age-related disparities in mortality. 
+
+Bias-Variance:
+
+- With the use of Ridge regression, a slight bias was introduced as well. This can be seen in the increased MSE value, but also with a slightly reduced variance. This trade off helped enhance the robustness and readability, especially with the presence of multicollinearity. 
+
+Conclusion: 
+
+- This Ridge regression effectively lessened the multicollinearity, showing a stabilization of coefficient estimates and improved model. 
+
+
+
+
+
+
+
+
+

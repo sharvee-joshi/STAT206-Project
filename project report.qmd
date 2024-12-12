@@ -107,6 +107,7 @@ ggplot(data, aes(x = MORT)) +
     y = "Frequency"
   ) +
   theme_minimal()
+```
 
 ```{r} 
 # Define the OLS model

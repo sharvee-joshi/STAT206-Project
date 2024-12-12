@@ -34,9 +34,9 @@ Y = X \underline{\beta} + \underline{\epsilon}
 $$
 where $Y$ represents the response variable which is the mortality rate collected between 1959 to 1961. $X$ represents a matrix of predictors, and $\underline{\beta}$ are the regression coefficients from the full model. 
 
-The full model was then used to estimate the association between the mortality rates and given predictors, as well as identify any instabilities in the coefficients caused by high multicollinearity. A common pattern seen in this paper is the high multicollinearity found between the predictors, especially in hydrocarbon, nitrogen oxides, and sulfer dioxides. These gases in particular happened to be highly correlated with one another. 
+The full model was then used to estimate the association between the mortality rates and given predictors, as well as identify any instabilities in the coefficients caused by high multi-collinearity. A common pattern seen in this paper is the high multi-collinearity found between the predictors, especially in hydrocarbon, nitrogen oxides, and sulfur dioxides. These gases in particular happened to be highly correlated with one another. 
 
-In order to address the multicollinearity, the author turns to two different methods: Ridge Regression and Variable Selection via Mallows' $C_p$ Criterion. The author first uses ridge regression by adding a penalty term to the Ordinary Least Squares objective function that looks like:
+In order to address the multi-collinearity, the author turns to two different methods: Ridge Regression and Variable Selection via Mallows' $C_p$ Criterion. The author first uses ridge regression by adding a penalty term to the Ordinary Least Squares objective function that looks like:
 $$
 \beta^* = argmin(||Y - X\beta||^2 + k||\beta||^2)
 $$
@@ -60,11 +60,13 @@ Standardizing the data also allowed for an improvement in performance of variabl
 
 The author does not exactly explain the thought process behind this, but better results were seen when using the standardized data on Mallows' $C_p$.
 
-By standardizing the data, we were also able to slightly reduce multicollinearity. While this is a major problem we face with the data, standardizing it helped mitigate the problem.
+By standardizing the data, we were also able to slightly reduce multi-collinearity. While this is a major problem we face with the data, standardizing it helped mitigate the problem.
 
 Finally, we standardized the data, simply because that's what the author did. We are trying our best to first recreate the analysis the author did, hence, it only made sense to follow his outline, and then diverge with our own results. 
 
 ## Assumptions
+
+**Add descp here**
 
 ## Reproduction Plan
 
@@ -82,9 +84,11 @@ head(data)
 ```
 
 ```{r}
-# Summary statistics of the dataset :We first examine the summary statistics of the dataset to understand the overall distribution of the variables, including their mean, median, and range. This helps identify potential issues such as skewness or extreme values that may impact the analysis.
+# Summary statistics of the dataset 
 summary(data)
 ```
+Looking at the summary statistics above for each of the parameters, our first problem arises that is described in the earlier sections. We need to standardize the data to make sure that the means and medians are closely tied to each other to lessen the variability. Thus, we move forward with centralizing the data.
+
 
 ```{r}
 # in order to replicate the paper, we need to centralize and standardize the data before we continue
@@ -109,6 +113,12 @@ ggplot(data, aes(x = MORT)) +
   theme_minimal()
 ```
 
+The author defines the response variable, mortality, as the total age adjusted mortality rate. He uses the following formula to describe the overall mortality rate:
+$$
+MR = (\sum D_i)(\sum (D_i/R_i))^{-1}
+$$
+$D_i$ and $R_i$ represent the death and age adjusted death rates, respectively, for the $i^{th}$ category for $i = 1,2,3,4$. These categories are defined as male white, female white, male non-white, and female non-white. Thus, MR is a collective, or overall mortality rate for the general population from 1959 to 1961. Even without standardizing the response variable, we see that the distribution appears to be normal and follows a nice Gaussian curve. However, we also wish to look at any outliers that may be present in the data.
+
 ```{r} 
 # Define the OLS model
 ols_model <- lm(MORT ~ ., data = data.norm)
@@ -118,12 +128,7 @@ cooks_dist <- cooks.distance(ols_model)
 plot(cooks_dist, main = "Cook's Distance for Outlier Detection", ylab = "Cook's Distance", xlab = "Index")
 ```
 
-```
-The author defines the response variable, mortality, as the total age adjusted mortality rate. He uses the following formula to describe the overall mortality rate:
-$$
-MR = (\sum D_i)(\sum (D_i/R_i))^{-1}
-$$
-$D_i$ and $R_i$ represent the death and age adjusted death rates, respectively, for the ith category for $i = 1,2,3,4$. These categories are defined as male white, female white, male non-white, and female non-white. Thus, MR is a collective, or overall mortality rate for the general population from 1959 to 1961. 
+**Add descp here**
 
 ```{r} 
 # Boxplot 
@@ -146,8 +151,11 @@ corrplot(cor_matrix, method = "circle", type = "upper", order = "AOE", title = "
 # VIF Calculation
 library(car)
 vif_values <- vif(lm(MORT ~ ., data = data.norm))
-kable(vif_values, caption = "VIF for Predictors")
+knitr::kable(vif_values, caption = "VIF for Predictors")
 ```
+
+**Add descp here**
+
 
 ```{r}
 # Scatterplot: Mortality vs. Pollution Variables
@@ -187,6 +195,20 @@ ggarrange(
 )
 ```
 
+The next graph shows a scatter-plot for each of the chemicals that were collected and comparing them to the mortality rate, or the response. The purpose of this graph was to simply see what each chemical is doing the mortality rate individually. 
+
+Looking at the top left graph, we see Mortality versus Hydrocarbon Pollution. There seems to be a slightly negative slope, indicating a negative correlation between the two. The effect is weak with a large amount of variability, so it's hard to take anything from this. 
+
+In the next graph, we take a look at the mortality rates against the $NO_x$ pollution. The slope line appears to be basically flat, indicating no significant linear relationship b between the two.
+
+Finally, we look at mortality rates versus the $SO_2$ pollution. Here, we see a bit more of a positive slope line appearing, indicating that higher $SO_2$ pollution levels could be associated with increased mortality rates. 
+
+What is interesting to note is that the author himself mentions that using these chemicals in particular would not yield to anything.
+
+::: callout
+"For example $SO_2$ is highly correlated with certain types of particulates and HC is closely tied to carbon monoxide and lead salts. Thus one cannot demonstrate a specific cause and effect even though the analysis quantifies the relationship."
+:::
+
 ```{r}
 # Group DENS into categories to simplify the plot
 data$DENS_group <- cut(data$DENS, breaks = 5, labels = c("Low", "Medium-Low", "Medium", "Medium-High", "High"))
@@ -204,19 +226,7 @@ ggplot(data, aes(x = HC, y = MORT, color = DENS_group)) +
   theme_minimal()
 ```
 
-The next graph shows a scatter-plot for each of the chemicals that were collected and comparing them to the mortality rate, or the response. The purpose of this graph was to simply see what each chemical is doing the mortality rate individually. 
-
-Looking at the top left graph, we see Mortality versus Hydrocarbon Pollution. There seems to be a slightly negative slope, indicating a negative correlation between the two. The effect is weak with a large amount of variability, so it's hard to take anything from this. 
-
-In the next graph, we take a look at the mortality rates against the $NO_x$ pollution. The slope line appears to be basically flat, indicating no significant linear relationship b between the two.
-
-Finally, we look at mortality rates versus the $SO_2$ pollution. Here, we see a bit more of a positive slope line appearing, indicating that higher $SO_2$ pollution levels could be associated with increased mortality rates. 
-
-What is interesting to note is that the author himself mentions that using these chemicals in particular would not yield to anything.
-
-::: callout
-"For example $SO_2$ is highly correlated with certain types of particulates and HC is closely tied to carbon monoxide and lead salts. Thus one cannot demonstrate a specific cause and effect even though the analysis quantifies the relationship."
-:::
+**Add descp here**
 
 
 ## The Full Model
@@ -258,7 +268,7 @@ qqnorm(ols_model$residuals)
 qqline(ols_model$residuals)
 shapiro.test(ols_model$residuals)
 ```
-Based off of the residuals plot, we do not see any patterns present. Moving onto the qq-plot, we do some slight curvature towards the end of the line, maybe indicating that the addition of a squared value in the predictors could be useful. The Shapiro Wilk's test is satisfied, so our assumptions are met, with some deviation in the linear aspect.
+Based off of the residuals plot, we do not see any patterns present. Moving onto the qq-plot, we do some slight curvature towards the end of the line, maybe indicating that the addition of a squared value in the predictors could be useful. The Shapiro Wilk's test is satisfied; our assumptions are met, with some deviation in the linear aspect.
 
 ## Ridge Regression
 
@@ -291,15 +301,15 @@ comparison <- data.frame(
   Ridge = as.numeric(ridge_coefficients)
 )
 #print(comparison)
-kable(comparison, theme = "Minimal") 
+knitr::kable(comparison, theme = "Minimal") 
 ```
-Step 4: Multicollinearity Analysis
+Step 4: Multi-Collinearity Analysis
 ```{r}
 #Find VIF
 library(car)
 vif_values <- vif(ols_model)
 #put in appendix
-kable(vif_values)
+knitr::kable(vif_values)
 plot(vif_values)
 ```
 Step 5: OLS Correlation Heatmap
@@ -316,20 +326,22 @@ ridge_predictions <- predict(ridge_model, s = optimal_lambda, newx = X)
 ols_mse <- mean((Y - ols_predictions)^2)
 ridge_mse <- mean((Y - ridge_predictions)^2)
 #data.frame(Method = c("OLS", "Ridge"), MSE = c(ols_mse, ridge_mse))
-kable(data.frame(Method = c("OLS", "Ridge"), MSE = c(ols_mse, ridge_mse)))
+knitr::kable(data.frame(Method = c("OLS", "Ridge"), MSE = c(ols_mse, ridge_mse)))
 ```
 
 ## Variable Selection
 
-### Mallow's $C_p$
+### Mallow's $C_p$ Background
 
 In order to start the process of eliminating variables, the author introduces Mallows' $C_p$. This statistics estimates the sum of squared biases plus the squared random errors in the response variable at all the data points. The statistic is calculated using:
 $$
 C_p = \dfrac{RSS_p}{\hat{\sigma^2}} - (n- 2p)
 $$
-Note, that $p$ is equal to the number of parameters, which includes the response variable. $RSS_p$ is the residual sum of squares for a particular regression being considered, and $\hat{\sigma^2$ is the MSE value, or the mean square value of the given regression. 
+Note, that $p$ is equal to the number of parameters, which includes the response variable. $RSS_p$ is the residual sum of squares for a particular regression being considered, and $\hat{\sigma^2}$ is the MSE value, or the mean square value of the given regression. 
 
-The author goes into length about how he was able to calculate the statistic by using a certain algorithm described in *Technometrics*, an article written by LaMotte and Hocking. This algorithm, from the sounds of it, takes over 32,000 total possible regression and looks at the best equations from these. His result was that they found approximately 4.5% of the 32,000 possibilities to yield a low $C_p$ value. Using modern technology, this algorithm is automatically implemented for us by using the function `regsubsets`. By using this function, we're able to quickly fish through the different $C_p$ values and find the best fitting model. Essentially, we would like to find a $C_p$ value that is close to the given number of parameters for that model. For example, the paper notes that their minimum $C_p$ value was 3.55, so they picked the model with the "best" set of five variables. Using this idea, we construct our own $C_p$ and conduct a test.
+The author goes into length about how he was able to calculate the statistic by using a certain algorithm described in *Technometrics: Computational Efficiency in the Selection of Regression Variables*, an article written by LaMotte and Hocking. This algorithm takes over 32,000 total possible regression and looks at the best equations from these. His result was that they found approximately 4.5% of the 32,000 possibilities to yield a low $C_p$ value. Using modern technology, this algorithm is automatically implemented for us by using the function `regsubsets`. By using this function, we're able to quickly fish through the different $C_p$ values and find the best fitting model. Essentially, we would like to find a $C_p$ value that is close to the given number of parameters for that model. For example, the paper notes that their minimum $C_p$ value was 3.55, so they picked the model with the "best" set of five variables. Using this idea, we construct our own $C_p$ and conduct a test.
+
+#### Choosing the Number of Predictors
 
 ```{r}
 #plotting mallow's Cp
@@ -377,7 +389,7 @@ library(knitr)
 cp_table <- cp_dat[order(cp_dat$cp_diff), ] # Sort by smallest difference
 
 # Step 4: Display Table
-kable(cp_table, col.names = c(
+knitr::kable(cp_table, col.names = c(
   "Number of Predictors", "Mallows' Cp", "Parameters (p+1)", "Difference (|Cp - Parameters|)"
 ), caption = "Mallows' Cp Table with Differences", format = "html") # Adjust format if not in markdown
 
@@ -385,6 +397,7 @@ kable(cp_table, col.names = c(
 
 The table above shows us first, the number of predictors in a given model, the $C_p$ value for that model, the number of parameters that would be in the model, as in including the intercept, and then finally, the absolute value for the difference of the statistic value and the number of parameters. We can see that the best model will be one that has 14 parameters in total, or 13 predictor variables and 1 intercept variable. That is because the difference value is the smallest. Thus, we can move on to determining which model this is and looking at the analysis of it.
 
+#### The Reduced Model
 
 ```{r}
 #Step 1: find out the optimal number of coefficients according to CP, then use that to create a variable for the predictors
@@ -399,7 +412,17 @@ red_cp_formula <- as.formula(paste("MORT ~", paste(best_predictors, collapse = "
 red_cp_model <- lm(red_cp_formula, data = data.norm)
 summary(red_cp_model)
 ```
-We have now calculated our reduced model. In this case, the Mallows' $C_p$ value decided that the model that was "best" would be one without two predictor variables: the percent employment in white-collar occupations in 1960, or WWDRK, and the percent of families with income under 3,000 dollars in 1960, or POOR. This seems to make sense as in the full model, both these coefficients had low partial t-test p-values, indicating little significance to the model. We also get an $R^2$ value equal to 0.7648, meaning that our reduced model using $C_p$ actually performed better than the authors. This is most likely due to the fact that the author ran 32,000 models of different combinations of predictors, whereas I only ran it on a random model for a given number of predictors. 
+We have now calculated our reduced model. In this case, the Mallows' $C_p$ value decided that the model that was "best" would be one without two predictor variables: the percent employment in white-collar occupations in 1960, or WWDRK, and the percent of families with income under 3,000 dollars in 1960, or POOR. The model looks like this: 
+$$
+\begin{align}
+\hat{MORT}&= 3.195 e^{-17} + 0.3093(PREC)-0.3254(JANT)-0.2388(JULT)- 0.2196(OVR65)-0.2312(POPN)\\
+&-0.2434(EDUC)-0.0475(HOUS)+0.08338(DENS)+0.6312(NONW)\\
+&-1.0078(HC)+1.017(NO_x)+0.08789(SO_2)+0.0132(HUMID)
+\end{align}
+$$
+This seems to make sense as in the full model, both these coefficients had low partial t-test p-values, indicating little significance to the model. We also get an $R^2$ value equal to 0.7648, meaning that our reduced model using $C_p$ actually performed better than the authors. I am not entirely sure why my model appeared to do better than the authors; the author took the time to run every single time of model and the various combinations, but perhaps that was not needed. 
+
+#### Reduced Model Assumptions
 
 Now let's see if our reduced model using Mallows' $C_p$ checks the assumptions.
 
@@ -425,7 +448,7 @@ qqline(red_cp_model$residuals)
 
 shapiro.test(red_cp_model$residuals)
 ```
-Our assumptions still appear to be met with the reduced model, so we can move forward to check on the multicollinearity, although there probably won't be much of a difference.
+Our assumptions still appear to be met with the reduced model, so we can move forward to check on the multi-collinearity.
 
 
 ```{r}
@@ -452,7 +475,7 @@ ggplot(cor_data, aes(x = Var1, y = Var2, fill = value)) +
   )
 ```
 
-As expected, multicollinearity stayed approximately the same. While the removal of two variables did make the graph slightly better, there still is a good amount of variables present, especially ones that are highly correlated together such as the chemical pollution variables. Finally, we compare the AIC values of the full model versus the reduced model, using Mallows' $C_p$, to see if the reduced model performs better.
+As expected, multi-collinearity stayed approximately the same. While the removal of two variables did make the graph slightly better, there still is a good amount of variables present, especially ones that are highly correlated together such as the chemical pollution variables. Finally, we compare the AIC values of the full model versus the reduced model, using Mallows' $C_p$, to see if the reduced model performs better.
 
 ```{r}
 #compare to full model - OLS model
@@ -461,21 +484,17 @@ cat("AIC of full model:", AIC(ols_model), "\n")
 cat("AIC of reduced model using Mallow's:", AIC(red_cp_model), "\n")
 
 ```
-<<<<<<< HEAD
 
+Thankfully, it appears that the reduced model is actually performing better than the full model as the AIC value is lower. It does appear as though getting rid of WWDRK and POOR appeared to help the model perform better. While I did deviate from the author's original algorithm for variable selection, I do believe I ran a more efficient code: running through over 32,000 different models to only get a lower performing model did not seem plausible to me, and while my code itself may not be as thorough as the author's, it definitely is more efficient and therefore less computationally intense for someone who would want to recreate this code. 
 
-
-=======
-Thankfully, it appears that the reduced model is actually performing better than the full model as the AIC value is lower. It does appear as though getting rid of WWDRK and POOR appeared to help the model perform better. While I did deviate from the author's original algorithm for variable selection, I do believe I ran a more efficient code: running through over 32,000 different models to only get a lower performing model did not seem plausible to me, and while my code itself may not be as thourough as the author's, it definitely is more efficient and therefore less computationally intense for someone who would want to recreate this code. 
->>>>>>> 0d1262ea546b3b660036caa0dfe9b4bdd1a318c4
 
 ## Principal Component Regression (PCR)
 
 ### Motivation for PCR
 
-In a linear regression model, when the predictors ($X_i$s) are linearly dependent or highly correlated, we say that multicollinearity exists in the model, which causes the following issue for the fitted multiple regression model:
+In a linear regression model, when the predictors ($X_i$s) are linearly dependent or highly correlated, we say that multi-collinearity exists in the model, which causes the following issue for the fitted multiple regression model:
 
--   The estimate of any parameter, say $\hat{\beta_2}$, depends on all the variables included in the model. For example, $\hat{\beta_2}$ does not merely reflect the effect of the $X_2$ variable on the response variable $Y$. Due to multicollinearity, the other variables affect the estimate of the parameter $\beta_2$. As a result, our inference about the effect of each predictor on the response is not reliable.
+-   The estimate of any parameter, say $\hat{\beta_2}$, depends on all the variables included in the model. For example, $\hat{\beta_2}$ does not merely reflect the effect of the $X_2$ variable on the response variable $Y$. Due to multi-collinearity, the other variables affect the estimate of the parameter $\beta_2$. As a result, our inference about the effect of each predictor on the response is not reliable.
 
 We have 15 predictors in our dataset, and we want to investigate the relationship between them and the response variable (mortality). There is a high correlation between most of the predictors. @fig-corr-xx illustrates this:
 
@@ -514,11 +533,11 @@ The correlation plot of the predictors indicates there is Multicolleniarity amon
 "In summary, the ridge regression coefficients obtained at $k = o.2$ for the fifteen explanatory variables listed in Table IV, with one notable exception($NO_x$ ), appear to be reasonable values upon which to base a quantification of the association between these variables and the total mortality rate."
 :::
 
-In the following, we present a Principal Component Regression model with all fifteen predictors as an alternative model for overcoming multicollinearity and compare it with the final Ridge Regression model suggested by the authors.
+In the following, we present a Principal Component Regression model with all fifteen predictors as an alternative model for overcoming multi-collinearity and compare it with the final Ridge Regression model suggested by the authors.
 
 ### Modeling PCR
 
-In PCR, we try to provide a weighted linear combination of the predictors ($X_i$s) like: $$Z_k = v_{k1}X_1 + v_{k2}X_2 + \dots + v_{kp}X_p$$ We then replace the correlated variables $[X_1, X_2, \dots, X_p]$ with $Z = [Z_1, Z_2, \dots, Z_p]$ which are uncorrelated, so the regression model $y = Z\beta_z + \epsilon$ does not suffer from multicollinearity.
+In PCR, we try to provide a weighted linear combination of the predictors ($X_i$s) like: $$Z_k = v_{k1}X_1 + v_{k2}X_2 + \dots + v_{kp}X_p$$ We then replace the correlated variables $[X_1, X_2, \dots, X_p]$ with $Z = [Z_1, Z_2, \dots, Z_p]$ which are uncorrelated, so the regression model $y = Z\beta_z + \epsilon$ does not suffer from multi-collinearity.
 
 First, we need to centralize and normalize all the variables for PCR. In the following, we assume the $y$ and $X$ variables are all centralized and normalized and show how to find the $Z$ matrix.
 
@@ -664,6 +683,8 @@ For this model $R^2=0.712$ which is 14% larger (better) than the corresponding R
 
 ## Comparison of Outputs
 
+**Add descp here**
+
 ```{r}
 # want to compare the AIC, ridge regression, CP Mallow, and PCA to the full model 
 ```
@@ -671,22 +692,30 @@ For this model $R^2=0.712$ which is 14% larger (better) than the corresponding R
 
 ## Deviations
 
-## Interpreting the Results
+As mentioned throughout the report, our group did a few things differently than the author. Our first deviation lied in how we experimented with $C_p$ Mallows'. Rather than going through and finding more than 32,000 different models and running our test that way, we used a simple construction of the algorithm to test the number of predictions, rather than each model for each number of predictors. This was more time efficient, and while our results are not the same, it did end up getting a better $R^2$ value. The $C_p$ Mallows' model also appeared to match the results of the PCR model and the Ridge Regression model, therefore keeping consistency throughout the project.
 
-# Challenges and Insights
+Another thing we did differently was introducing the idea of PCR, or principle component regression. This is not something the author did in his original article, but we as a team believed this method best addressed the issue of multi-collinearity without the addition of new terms like interactions, or removal of terms. 
+
+Finally, our team did take the time to introduce some exploratory data analysis, which the author failed to do in his article. While this is a minor change, we believe introducing helpful graphs and descriptive statistics would help anyone reading this report or anyone trying to conduct their own analysis on the data see what the data itself looks like and get a better idea of how to conduct their own analysis. 
 
 ## Challenges
 
-## Insights
+There were a plethora of challenges we faced throughout this project. For one, having to figure out how the data was centralized was the biggest step. In order to even start the project and make our deviations, we needed to make sure our full model, or the OLS model, matched the authors. When first creating the code for an OLS model, we made the mistake of not centralizing the data, thus getting extremely different results for the ridge regression, OLS, and $C_p$ Mallows' models. After debriefing with the team, we realized our crucial mistake, and had to go back and fix the original data to match the data the author used. The author had very briefly mentioned this step, leading to our oversight. 
+
+The next main challenge was conducting our analysis in a way that would match the authors. This main challenge was especially prevalent in the $C_p$ Mallows' model, and led to the deviation of choosing to simply use this method another way instead of how the author did it. This leads to the main problem we faced in the project: trying to stay as authentic and close to the article as possible, while also realizing that there are better ways of conducting tests that are different from the way he did it. 
+
+Finally, one of the biggest challenges we faced was getting GitHub to cooperate. I will not go too much into this topic, however, GitHub on RStudio was difficult and most of the time, we had to separately paste our own work into different files as committing, pushing, and pulling did not work well for us. 
 
 # Conclusion
 
-## Significance
-
 ## Summary
+
+**Add descp here**
 
 ## Future Work
 
+In the future, we would really like to address the multi-collinearity problem. This seemed to be the biggest problem in the data, and despite running three different kinds of analyses' to address the problem, the multi-collinearity situation was never resolved. If we were to continue with the project, it would be nice to divert our attention on addressing this rather than spending time recreating the article. It would be nice to see if, perhaps, creating a new interaction term between the chemical pollutants, HC, $NO_x$, and $SO_x$ could resolve it. Another interaction term between precipitation and January temperatures could also be created, as there as multi-collinearity between those two as well. By adding these terms into the model and running our tests again with those two terms adding, it would be interesting to see what results we would achieve, and if in fact, the multi-collinearity lessens.
+
 ## Acknowledgements
 
-We'd like to first start off by thanking Dr. Landeros for the opportunity to recreate an article as profound as this one... add on here
+We'd like to first start off by thanking Dr. Landeros for the opportunity to recreate an article as profound as this one. While time was limited, and patience was tested via RStudio, this was an incredibly fruitful project that taught students how to dive deeper into statistical computing. Based off of the lectures in STAT206, we were able to conduct a well structured analysis on older data that gave us results similar, if not better, results than the original. Our code, while sometimes robust, has better formatting and is more structured than what it would have been without the helpful tips from our professor. We thank you for taking the time to read our report. 

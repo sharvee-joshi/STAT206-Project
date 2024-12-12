@@ -108,6 +108,15 @@ ggplot(data, aes(x = MORT)) +
   ) +
   theme_minimal()
 
+```{r} 
+# Define the OLS model
+ols_model <- lm(MORT ~ ., data = data.norm)
+
+# Outlier Detection with Cook's Distance
+cooks_dist <- cooks.distance(ols_model)
+plot(cooks_dist, main = "Cook's Distance for Outlier Detection", ylab = "Cook's Distance", xlab = "Index")
+```
+
 ```
 The author defines the response variable, mortality, as the total age adjusted mortality rate. He uses the following formula to describe the overall mortality rate:
 $$
@@ -130,6 +139,13 @@ ggplot(boxplot_data, aes(x = variable, y = value)) +
 library(corrplot)
 cor_matrix <- cor(data, use = "complete.obs") # Handle missing values
 corrplot(cor_matrix, method = "circle", type = "upper", order = "AOE", title = "Correlation Heatmap")
+```
+
+```{r}
+# VIF Calculation
+library(car)
+vif_values <- vif(lm(MORT ~ ., data = data.norm))
+kable(vif_values, caption = "VIF for Predictors")
 ```
 
 ```{r}
@@ -169,6 +185,24 @@ ggarrange(
   hc,nox,so2
 )
 ```
+
+```{r}
+# Group DENS into categories to simplify the plot
+data$DENS_group <- cut(data$DENS, breaks = 5, labels = c("Low", "Medium-Low", "Medium", "Medium-High", "High"))
+
+# Updated visualization with grouped DENS
+ggplot(data, aes(x = HC, y = MORT, color = DENS_group)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "Interaction Effect: HC and Grouped DENS on Mortality",
+    x = "Hydrocarbon Pollution",
+    y = "Mortality",
+    color = "Density Group"
+  ) +
+  theme_minimal()
+```
+
 The next graph shows a scatter-plot for each of the chemicals that were collected and comparing them to the mortality rate, or the response. The purpose of this graph was to simply see what each chemical is doing the mortality rate individually. 
 
 Looking at the top left graph, we see Mortality versus Hydrocarbon Pollution. There seems to be a slightly negative slope, indicating a negative correlation between the two. The effect is weak with a large amount of variability, so it's hard to take anything from this. 

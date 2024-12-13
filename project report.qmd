@@ -140,7 +140,7 @@ cooks_dist <- cooks.distance(ols_model)
 plot(cooks_dist, main = "Cook's Distance for Outlier Detection", ylab = "Cook's Distance", xlab = "Index")
 ```
 
-**Add descp here**
+The Cook’s Distance plot shows a few data points with unusually high values. These points could potentially distort the regression results if left unaddressed. While we have identified these influential observations, no immediate decision to exclude them was made to preserve the integrity of the original dataset. 
 
 ```{r} 
 # Boxplot 
@@ -181,7 +181,7 @@ vif_values <- vif(lm(MORT ~ ., data = data.norm))
 knitr::kable(vif_values, caption = "VIF for Predictors")
 ```
 
-**Add descp here**
+The VIF values for some variables, particularly pollution-related predictors such as HC (Hydrocarbon), NOX (Nitrogen Oxides), and SO2 (Sulfur Dioxide), were extremely high, exceeding 100 in some cases. These values confirm the presence of severe multicollinearity among these variables. Ridge Regression and PCA were subsequently applied to mitigate this issue, as they are specifically designed to stabilize models in the presence of multicollinearity.
 
 
 ```{r}
@@ -251,9 +251,20 @@ ggplot(data, aes(x = HC, y = MORT, color = DENS_group)) +
     color = "Density Group"
   ) +
   theme_minimal()
+
+# Exclude the 'DENS' variable from the data for better visualization
+data_no_dens <- data[ , !(names(data) %in% "DENS")]
+
+# Boxplot without DENS
+boxplot_data_no_dens <- melt(data_no_dens)
+ggplot(boxplot_data_no_dens, aes(x = variable, y = value)) +
+  geom_boxplot(fill = "lightblue", outlier.color = "red") +
+  labs(title = "Boxplot of Variables (Excluding DENS)", x = "Variables", y = "Values") +
+  theme_minimal()
 ```
 
-**Add descp here**
+In the original dataset, the variable DENS represents population density, which has significantly larger values compared to other predictors. This disparity in scale skews the boxplot, overshadowing the distribution of other variables.
+Analysis results indicate that the variable DENS (Population Density) exhibits significantly larger values compared to other predictors, causing the boxplot to overshadow the distribution of other variables. Upon excluding the DENS variable, the boxplot highlights multiple outliers in pollution-related predictors such as HC (Hydrocarbon), NOX (Nitrogen Oxides), and SOX (Sulfur Oxides). These outliers suggest potential multicollinearity and underscore the need for further analysis to properly interpret the relationships between these variables and mortality rates.
 
 
 ## The Full Model
@@ -817,23 +828,29 @@ For this model $R^2=0.712$ which is 14% larger (better) than the corresponding R
 
 ## Comparison of Outputs
 
-```{r}
 The outputs from the various models were compared using AIC, R-squared, and Mean Squared Error (MSE) as performance metrics. Below is a summary table:
-# compare the AIC, ridge regression, CP Mallow, and PCA to the full model 
+
+```{r}
+# R² and AIC values
 comparison <- data.frame(
   Model = c("OLS Full", "Ridge", "Mallows' C_p", "PCR"),
-  R2 = c(0.7648, 0.545, 0.7648, 0.712),
-  AIC = c(AIC(ols_model), AIC(ridge_model), AIC(red_cp_model), NA)
+  R2 = c(0.7648, 0.545, 0.7648, 0.712),     
+  AIC = c(-128.2472, NA, -132.2294, NA),     
+  MSE = c(0.0039, 0.0045, NA, NA)        
 )
-kable(comparison, caption = "Model Comparison")
+
+# Output the table
+library(knitr)
+kable(
+  comparison,
+  caption = "Comparison of Model Outputs: AIC, R², and MSE",
+  format = "html"
+)
+
 ```
-
-From these comparisons, the Mallows’ Cp model emerged as the best-performing model, achieving the lowest AIC value and the highest R-squared. Ridge Regression also performed well in terms of AIC, but its slightly higher MSE suggests it is less effective in minimizing prediction errors. The PCR model, while innovative, did not outperform Mallows’ Cp or Ridge Regression, largely due to its reliance on reduced components that excluded some influential predictors.
-
-
-```{r}
-# want to compare the AIC, ridge regression, CP Mallow, and PCA to the full model 
-```
+The Mallows' Cp model performed the best with the lowest AIC (-132.2294) and the highest R² (0.7648). 
+Ridge Regression stabilizes coefficients but has a higher MSE (0.0045) and a lower R² (0.5450). 
+The PCR model shows a relatively good R² (0.7120), but lacks AIC and MSE data for a complete evaluation.
 
 
 ## Deviations
@@ -856,21 +873,11 @@ Finally, one of the biggest challenges we faced was getting GitHub to cooperate.
 
 ## Summary
 
-This project replicated and extended the analyses from the article “Instabilities of Regression Estimates Relating Air Pollution to Mortality”, using modern statistical techniques and computational tools. The original study focused on modeling the relationship between air pollution and mortality, addressing challenges like multicollinearity. While adhering to the original methodology, we introduced Ridge Regression, Mallows’ C_p, and Principal Component Regression (PCR) to extend the analysis and improve computational efficiency.
+This project replicated and extended the analysis from the article “Instabilities of Regression Estimates Relating Air Pollution to Mortality” using modern statistical techniques and computational tools. The original study aimed to model the relationship between air pollution and mortality, addressing challenges like multicollinearity. While adhering to the original methodology, we introduced Ridge Regression, Mallows’ C_p, and Principal Component Regression (PCR) to improve the analysis and enhance computational efficiency.
 
-Our key findings include:
-	1.	Ridge Regression effectively stabilized coefficients, particularly for multicollinear variables like NO_x and HC, with improved variance but a slight trade-off in bias. However, the Ridge model’s predictive accuracy, measured through R^2, lagged behind the Mallows’ C_p and OLS models.
-	2.	Mallows’ C_p variable selection was implemented with an optimized algorithm, avoiding exhaustive computation of over 32,000 models. This streamlined approach yielded a reduced model with the highest R^2 (0.7648) and the lowest AIC, outperforming other models in terms of prediction accuracy and computational efficiency.
-	3.	Principal Component Regression (PCR) introduced a modern perspective, addressing multicollinearity through dimensionality reduction. Although PCR retained predictive accuracy comparable to OLS, its reliance on reduced components led to a marginally lower R^2 (0.712) than the Mallows’ C_p model. Nevertheless, it highlighted alternative ways to stabilize coefficients and simplify models.
+Key findings include that Ridge Regression stabilized coefficients, particularly for multicollinear variables like NO_x and HC, improving variance with a slight trade-off in bias, though its predictive accuracy (R²) lagged behind Mallows’ C_p and OLS models. Mallows’ C_p, implemented with an optimized algorithm, avoided exhaustive computation of over 32,000 models, producing a reduced model with the highest R² (0.7648) and the lowest AIC. PCR addressed multicollinearity through dimensionality reduction, offering similar predictive accuracy to OLS but with a marginally lower R² (0.712), highlighting an alternative approach to stabilize coefficients and simplify models.
 
-Key Contributions and Deviations
-
-Compared to the original study, we:
-- Improved computational efficiency by refining Mallows’ C_p selection.
-- Enhanced the analysis by introducing PCR, providing a modern extension to address multicollinearity without relying on manual variable selection.
-- Incorporated exploratory data analysis, offering insights into data patterns and relationships, which were absent in the original article.
-
-Despite these advancements, challenges such as persistent multicollinearity among pollution variables (HC, NO_x, and SO_x) remain unresolved. The original study’s critique of pollution variables being inherently interdependent was confirmed.
+Key contributions and deviations compared to the original study include refining Mallows’ C_p selection for improved computational efficiency, introducing PCR for modern multicollinearity management, and incorporating exploratory data analysis to provide additional insights into data patterns and relationships. Despite these advancements, challenges such as persistent multicollinearity among pollution variables (HC, NO_x, and SO_x) remain unresolved, confirming the original study's critique of the interdependence of these pollution variables.
 
 ## Acknowledgements
 

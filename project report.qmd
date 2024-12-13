@@ -86,11 +86,32 @@ Our plan to recreate the author's intentions was simple: redo all of the models 
 
 # Implementation
 
+```{r}
+#libraries used
+library("bestglm")
+library(ggplot2)
+library(reshape2)
+library(ggpubr)
+
+library(corrplot)
+library(knitr) 
+library(car)
+
+library(MASS)
+library(glmnet)
+library(knitr)
+library(kableExtra)
+
+library(plotly)
+library(leaps)    # For all subset regression
+
+```
+
+
 ## Exploratory Data Analysis
 
 ```{r}
 # pulling the data
-library("bestglm")
 data <- mcdonald
 head(data)
 ```
@@ -114,7 +135,6 @@ for(i in 1:ncol(data)){
 ```{r}
 #Distribution of response variable
 #install.packages("ggplot2")
-library(ggplot2)
 ggplot(data, aes(x = MORT)) +
   geom_histogram(binwidth = 50, fill = "skyblue", color = "black") +
   labs(
@@ -144,7 +164,6 @@ The Cook’s Distance plot shows a few data points with unusually high values. T
 
 ```{r} 
 # Boxplot 
-library(reshape2)
 boxplot_data <- melt(data)
 ggplot(boxplot_data, aes(x = variable, y = value)) +
   geom_boxplot(fill = "lightblue", outlier.color = "red") +
@@ -168,15 +187,12 @@ ggplot(boxplot_data_no_dens, aes(x = variable, y = value)) +
 
 ```{r}
 # Correlation heatmap
-library(corrplot)
 cor_matrix <- cor(data, use = "complete.obs") # Handle missing values
 corrplot(cor_matrix, method = "circle", type = "upper", order = "AOE", title = "Correlation Heatmap")
 ```
 
 ```{r}
 # VIF Calculation
-library(knitr) 
-library(car)
 vif_values <- vif(lm(MORT ~ ., data = data.norm))
 knitr::kable(vif_values, caption = "VIF for Predictors")
 ```
@@ -216,7 +232,6 @@ so2 <- ggplot(data, aes(x = SOx, y = MORT)) +
   ) +
   theme_minimal()
 
-library(ggpubr)
 ggarrange(
   hc,nox,so2
 )
@@ -314,8 +329,7 @@ Based off of the residuals plot, we do not see any patterns present. Moving onto
 ### Find the Optimal Lambda 
 
 ```{r}
-library(MASS)
-library(glmnet)
+
 
 Y <- data.norm$MORT
 X <- as.matrix(data.norm[ , !names(data.norm) %in% "MORT"])
@@ -351,8 +365,7 @@ After finding the optimal $\lambda$, the Ridge Regression model was fit using gl
 ### Compare OLS and Ridge Coefficients
 
 ```{r}
-library(knitr)
-library(kableExtra)
+
 ols_coefficients <- coef(ols_model)
 
 # Compare 
@@ -373,7 +386,6 @@ This comparision showed shrinkage of coefficients in Ridge regression.
 ### Multicollinearity Analysis
 ```{r}
 #Find VIF
-library(car)
 vif_values <- vif(ols_model)
 
 #put in appendix
@@ -425,7 +437,7 @@ Model performance was evaluated using the Mean Square Error (MSE):
 ### Ridge Trace Plot
 
 ```{r}
-library(plotly)
+
 
 ridge_traces <- glmnet(X, Y, alpha = 0, lambda = cv_ridge$lambda)
 trace_coefficients <- as.matrix(coef(ridge_traces))
@@ -491,8 +503,7 @@ The author goes into length about how he was able to calculate the statistic by 
 ```{r}
 #plotting mallow's Cp
 
-library(ggplot2)  # For plotting
-library(leaps)    # For all subset regression
+
 
 #separating the data for response and predictors
 response <- data.norm$MORT
@@ -528,7 +539,6 @@ ggplot(cp_dat, aes(x = num_pred, y = cp)) +
 In the plot above, I've constructed a simple plot that will show us what number of predictors is ideal according to Mallows' $C_p$. I determined the absolute difference between the $C_p$ value and the number of parameters, making sure to take into account the intercept. The algorithm was then able to spit out the most ideal value, and tell us what model we should use that has the right number of predictors. As we can see above, we want to use a model that has 13 predictor values, that does not include our intercept.
 
 ```{r}
-library(knitr)
 
 # Step 3: Sort by Difference
 cp_table <- cp_dat[order(cp_dat$cp_diff), ] # Sort by smallest difference
@@ -597,7 +607,7 @@ Our assumptions still appear to be met with the reduced model, so we can move fo
 
 
 ```{r}
-library(reshape2)
+
 data_reduced <- data.norm[, best_predictors]
 cor_matrix <- cor(data_reduced)
 
@@ -648,8 +658,7 @@ We have 15 predictors in our dataset, and we want to investigate the relationshi
 #------------------Cleaning the memory
 rm(list=ls())
 #------------------Reading Data
-library(leaps)
-library("bestglm")
+
 data <- data.frame(mcdonald)
 #-----------------Centralize-Normalize Data
 data.norm <- data
@@ -663,7 +672,7 @@ mort.norm <- x.norm$MORT
 x.norm$MORT <- NULL
 #----------------Correlation Plot for predictors (X)
 res_xx <- cor(x.norm, method="pearson")
-library(corrplot)
+
 ```
 
 ```{r}
@@ -716,7 +725,7 @@ head(z)
 #| label: fig-cor-pc
 #| fig-cap: Correlation plot for 15 Principal Components (Columns of the matrix Z)
 res_zz <- cor(z, method="pearson")
-library(corrplot)
+
 corrplot(res_zz, method = 'ellipse', order = 'AOE', type = 'upper')
 ```
 
@@ -840,7 +849,7 @@ comparison <- data.frame(
 )
 
 # Output the table
-library(knitr)
+
 kable(
   comparison,
   caption = "Comparison of Model Outputs: AIC, R², and MSE",

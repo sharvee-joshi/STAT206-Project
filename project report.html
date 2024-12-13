@@ -3902,7 +3902,7 @@ W = 0.98274, p-value = 0.5548</code></pre>
 <span id="cb45-8"><a href="#cb45-8"></a></span>
 <span id="cb45-9"><a href="#cb45-9"></a>optimal_lambda</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.01205746</code></pre>
+<pre><code>[1] 0.01452326</code></pre>
 </div>
 </div>
 <p>Cross-validation was used to identify the optimal penalty parameter <span class="math inline">\(\lambda\)</span>. This was done with the use of the cv.glmnet function, which helped the balance between bias and variance trade-offs.</p>
@@ -3921,22 +3921,22 @@ W = 0.98274, p-value = 0.5548</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>16 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
                        s0
-(Intercept)  4.436973e-17
-PREC         2.731315e-01
-JANT        -2.161035e-01
-JULT        -1.325386e-01
-OVR65       -7.922821e-02
-POPN        -6.418517e-02
-EDUC        -1.243741e-01
-HOUS        -9.396516e-02
-DENS         1.157789e-01
-NONW         5.111625e-01
-WWDRK       -3.810365e-02
-POOR         2.798439e-02
-HC          -7.337650e-02
-NOX          6.558349e-02
-SOx          2.440751e-01
-HUMID        2.632420e-02</code></pre>
+(Intercept)  4.471765e-17
+PREC         2.669367e-01
+JANT        -2.051109e-01
+JULT        -1.211372e-01
+OVR65       -7.269440e-02
+POPN        -4.974064e-02
+EDUC        -1.209100e-01
+HOUS        -9.487192e-02
+DENS         1.181621e-01
+NONW         4.910717e-01
+WWDRK       -3.697347e-02
+POOR         3.156519e-02
+HC          -6.478266e-02
+NOX          5.854360e-02
+SOx          2.451014e-01
+HUMID        2.858919e-02</code></pre>
 </div>
 </div>
 <p>After finding the optimal <span class="math inline">\(\lambda\)</span>, the Ridge Regression model was fit using glmnet. This helped with stabilizing coefficients, it was particularly notable with high collinear predictors (e.g. NOX, HC). Reducing the influence of these variables without eliminating them.</p>
@@ -3976,77 +3976,77 @@ HUMID        2.632420e-02</code></pre>
 <tr class="even">
 <td style="text-align: left;">PREC</td>
 <td style="text-align: right;">0.3058371</td>
-<td style="text-align: right;">0.2731315</td>
+<td style="text-align: right;">0.2669367</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">JANT</td>
 <td style="text-align: right;">-0.3167439</td>
-<td style="text-align: right;">-0.2161035</td>
+<td style="text-align: right;">-0.2051109</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">JULT</td>
 <td style="text-align: right;">-0.2374017</td>
-<td style="text-align: right;">-0.1325386</td>
+<td style="text-align: right;">-0.1211372</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">OVR65</td>
 <td style="text-align: right;">-0.2134310</td>
-<td style="text-align: right;">-0.0792282</td>
+<td style="text-align: right;">-0.0726944</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">POPN</td>
 <td style="text-align: right;">-0.2322663</td>
-<td style="text-align: right;">-0.0641852</td>
+<td style="text-align: right;">-0.0497406</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">EDUC</td>
 <td style="text-align: right;">-0.2331429</td>
-<td style="text-align: right;">-0.1243741</td>
+<td style="text-align: right;">-0.1209100</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">HOUS</td>
 <td style="text-align: right;">-0.0538151</td>
-<td style="text-align: right;">-0.0939652</td>
+<td style="text-align: right;">-0.0948719</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">DENS</td>
 <td style="text-align: right;">0.0841631</td>
-<td style="text-align: right;">0.1157789</td>
+<td style="text-align: right;">0.1181621</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">NONW</td>
 <td style="text-align: right;">0.6395617</td>
-<td style="text-align: right;">0.5111625</td>
+<td style="text-align: right;">0.4910717</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">WWDRK</td>
 <td style="text-align: right;">-0.0138715</td>
-<td style="text-align: right;">-0.0381036</td>
+<td style="text-align: right;">-0.0369735</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">POOR</td>
 <td style="text-align: right;">-0.0112112</td>
-<td style="text-align: right;">0.0279844</td>
+<td style="text-align: right;">0.0315652</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">HC</td>
 <td style="text-align: right;">-0.9938278</td>
-<td style="text-align: right;">-0.0733765</td>
+<td style="text-align: right;">-0.0647827</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">NOX</td>
 <td style="text-align: right;">0.9981482</td>
-<td style="text-align: right;">0.0655835</td>
+<td style="text-align: right;">0.0585436</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">SOx</td>
 <td style="text-align: right;">0.0878937</td>
-<td style="text-align: right;">0.2440751</td>
+<td style="text-align: right;">0.2451014</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">HUMID</td>
 <td style="text-align: right;">0.0092198</td>
-<td style="text-align: right;">0.0263242</td>
+<td style="text-align: right;">0.0285892</td>
 </tr>
 </tbody>
 </table>
@@ -4194,7 +4194,7 @@ HUMID        2.632420e-02</code></pre>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Ridge</td>
-<td style="text-align: right;">0.0042692</td>
+<td style="text-align: right;">0.0043292</td>
 </tr>
 </tbody>
 </table>
@@ -4746,7 +4746,7 @@ PC14    1.7      99.4
 PC15    0.6     100.0</code></pre>
 </div>
 </div>
-<p>The first principal component (<span class="math inline">\(PC_1\)</span>) only accounts <span class="math inline">\(27\)</span>% of the variation (information) of <span class="math inline">\(X\)</span> matrix, the first two principal components (<span class="math inline">\(PC_1\)</span> and <span class="math inline">\(PC_2\)</span>) account <span class="math inline">\(30\)</span>% of the <span class="math inline">\(X\)</span> matrix variation and so on. All the principal components matrix,<span class="math inline">\(Z=[PC_1, PC_2,\dots,PC_{15}]\)</span>, account <span class="math inline">\(100\)</span>% of the variation of of the <span class="math inline">\(X\)</span> matrix.</p>
+<p>The first principal component (<span class="math inline">\(PC_1\)</span>) only accounts <span class="math inline">\(17\)</span>% of the variation (information) of <span class="math inline">\(X\)</span> matrix, the first two principal components (<span class="math inline">\(PC_1\)</span> and <span class="math inline">\(PC_2\)</span>) account <span class="math inline">\(30\)</span>% of the <span class="math inline">\(X\)</span> matrix variation and so on. All the principal components matrix,<span class="math inline">\(Z=[PC_1, PC_2,\dots,PC_{15}]\)</span>, account <span class="math inline">\(100\)</span>% of the variation of of the <span class="math inline">\(X\)</span> matrix.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb79"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ncol</span>(x.norm)</span>
 <span id="cb79-2"><a href="#cb79-2"></a>PVE <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="cn">NA</span>,p)</span>

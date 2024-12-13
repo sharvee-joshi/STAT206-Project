@@ -739,7 +739,7 @@ rownames(variation) <- c("PC1","PC2","PC3","PC4","PC5","PC6","PC7","PC8","PC9","
 round(variation[,c(1,3)],1)
 ```
 
-The first principal component ($PC_1$) only accounts $27$% of the variation (information) of $X$ matrix, the first two principal components ($PC_1$ and $PC_2$) account $30$% of the $X$ matrix variation and so on. All the principal components matrix,$Z=[PC_1, PC_2,\dots,PC_{15}]$, account $100$% of the variation of of the $X$ matrix.
+The first principal component ($PC_1$) only accounts $17$% of the variation (information) of $X$ matrix, the first two principal components ($PC_1$ and $PC_2$) account $30$% of the $X$ matrix variation and so on. All the principal components matrix,$Z=[PC_1, PC_2,\dots,PC_{15}]$, account $100$% of the variation of of the $X$ matrix.
 
 ```{r}
 #| label: fig-scree
@@ -857,6 +857,9 @@ kable(
 )
 
 ```
+
+
+
 The Mallows' Cp model performed the best with the lowest AIC (-132.2294) and the highest R² (0.7648). 
 Ridge Regression stabilizes coefficients but has a higher MSE (0.0045) and a lower R² (0.5450). 
 The PCR model shows a relatively good R² (0.7120), but lacks AIC and MSE data for a complete evaluation.

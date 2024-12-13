@@ -197,7 +197,7 @@ vif_values <- vif(lm(MORT ~ ., data = data.norm))
 knitr::kable(vif_values, caption = "VIF for Predictors")
 ```
 
-The VIF values for some variables, particularly pollution-related predictors such as HC (Hydrocarbon), NOX (Nitrogen Oxides), and SO2 (Sulfur Dioxide), were extremely high, exceeding 100 in some cases. These values confirm the presence of severe multicollinearity among these variables. Ridge Regression and PCA were subsequently applied to mitigate this issue, as they are specifically designed to stabilize models in the presence of multicollinearity.
+The VIF values for some variables, particularly pollution-related predictors such as $HC$ (Hydrocarbon), $NO_x$ (Nitrogen Oxides), and $SO_x$ (Sulfur Dioxide), were extremely high, exceeding 100 in some cases. These values confirm the presence of severe multicollinearity among these variables. Ridge Regression and PCA were subsequently applied to mitigate this issue, as they are specifically designed to stabilize models in the presence of multicollinearity.
 
 
 ```{r}
@@ -248,7 +248,7 @@ Finally, we look at mortality rates versus the $SO_2$ pollution. Here, we see a 
 What is interesting to note is that the author himself mentions that using these chemicals in particular would not yield to anything.
 
 ::: callout
-"For example $SO_2$ is highly correlated with certain types of particulates and HC is closely tied to carbon monoxide and lead salts. Thus one cannot demonstrate a specific cause and effect even though the analysis quantifies the relationship."
+"For example $SO_2$ is highly correlated with certain types of particulates and $HC$ is closely tied to carbon monoxide and lead salts. Thus one cannot demonstrate a specific cause and effect even though the analysis quantifies the relationship."
 :::
 
 ```{r}
@@ -279,7 +279,7 @@ ggplot(boxplot_data_no_dens, aes(x = variable, y = value)) +
 ```
 
 In the original dataset, the variable DENS represents population density, which has significantly larger values compared to other predictors. This disparity in scale skews the boxplot, overshadowing the distribution of other variables.
-Analysis results indicate that the variable DENS (Population Density) exhibits significantly larger values compared to other predictors, causing the boxplot to overshadow the distribution of other variables. Upon excluding the DENS variable, the boxplot highlights multiple outliers in pollution-related predictors such as HC (Hydrocarbon), NOX (Nitrogen Oxides), and SOX (Sulfur Oxides). These outliers suggest potential multicollinearity and underscore the need for further analysis to properly interpret the relationships between these variables and mortality rates.
+Analysis results indicate that the variable DENS (Population Density) exhibits significantly larger values compared to other predictors, causing the boxplot to overshadow the distribution of other variables. Upon excluding the DENS variable, the boxplot highlights multiple outliers in pollution-related predictors such as $HC$ (Hydrocarbon), $NO_x$ (Nitrogen Oxides), and $SO_x$ (Sulfur Oxides). These outliers suggest potential multicollinearity and underscore the need for further analysis to properly interpret the relationships between these variables and mortality rates.
 
 
 ## The Full Model
@@ -395,9 +395,9 @@ plot(vif_values)
 
 Variance Inflation Factors (VIF) were calculated for the OLS model to quantify multicollinearity. 
 
-- Predictors such as NOX and HC exhibited very hight VIF values (>100), showing there is a severe multicollinear relationship. 
+- Predictors such as $NO_x$ and $HC$ exhibited very high VIF values (>100), showing there is a severe multicollinear relationship. 
 
-- The Ridge Regression shows this issues are reduce, as shown by the stabilizatioon of coefficients. 
+- The Ridge Regression shows this issues are reduce, as shown by the stabilization of coefficients. 
 
 
 ### OLS Correlation Heatmap
@@ -467,7 +467,7 @@ The Ridge trace plot illustrated the progression of coefficients as $\lambda$ in
 - Stabilization of more key predictors (e.g. PREC, DENS), show there relevance to the response variable with a lower $\lambda$ value. 
 
 
-## Interpretation
+### Interpretation
 
 Pollution Variables: 
 
@@ -486,9 +486,9 @@ Conclusion:
 - This Ridge regression effectively lessened the multicollinearity, showing a stabilization of coefficient estimates and improved model. 
 
 
-## Variable Selection
+## Variable Selection: Mallow's $C_p$
 
-### Mallow's $C_p$ Background
+## The Background
 
 In order to start the process of eliminating variables, the author introduces Mallows' $C_p$. This statistics estimates the sum of squared biases plus the squared random errors in the response variable at all the data points. The statistic is calculated using:
 $$
@@ -498,7 +498,7 @@ Note, that $p$ is equal to the number of parameters, which includes the response
 
 The author goes into length about how he was able to calculate the statistic by using a certain algorithm described in *Technometrics: Computational Efficiency in the Selection of Regression Variables*[@technometrics1], an article written by LaMotte and Hocking. This algorithm takes over 32,000 total possible regression and looks at the best equations from these. His result was that they found approximately 4.5% of the 32,000 possibilities to yield a low $C_p$ value. Using modern technology, this algorithm is automatically implemented for us by using the function `regsubsets`. By using this function, we're able to quickly fish through the different $C_p$ values and find the best fitting model. Essentially, we would like to find a $C_p$ value that is close to the given number of parameters for that model. For example, the paper notes that their minimum $C_p$ value was 3.55, so they picked the model with the "best" set of five variables. Using this idea, we construct our own $C_p$ and conduct a test.
 
-#### Choosing the Number of Predictors
+### Choosing the Number of Predictors
 
 ```{r}
 #plotting mallow's Cp
@@ -552,7 +552,7 @@ knitr::kable(cp_table, col.names = c(
 
 The table above shows us first, the number of predictors in a given model, the $C_p$ value for that model, the number of parameters that would be in the model, as in including the intercept, and then finally, the absolute value for the difference of the statistic value and the number of parameters. We can see that the best model will be one that has 14 parameters in total, or 13 predictor variables and 1 intercept variable. That is because the difference value is the smallest. Thus, we can move on to determining which model this is and looking at the analysis of it.
 
-#### The Reduced Model
+### The Reduced Model
 
 ```{r}
 #Step 1: find out the optimal number of coefficients according to CP, then use that to create a variable for the predictors
@@ -577,7 +577,7 @@ $$
 $$
 This seems to make sense as in the full model, both these coefficients had low partial t-test p-values, indicating little significance to the model. We also get an $R^2$ value equal to 0.7648, meaning that our reduced model using $C_p$ actually performed better than the authors. I am not entirely sure why my model appeared to do better than the authors; the author took the time to run every single time of model and the various combinations, but perhaps that was not needed. 
 
-#### Reduced Model Assumptions
+### Reduced Model Assumptions
 
 Now let's see if our reduced model using Mallows' $C_p$ checks the assumptions.
 
@@ -884,7 +884,7 @@ Finally, one of the biggest challenges we faced was getting GitHub to cooperate.
 
 This project replicated and extended the analysis from the article “Instabilities of Regression Estimates Relating Air Pollution to Mortality” using modern statistical techniques and computational tools. The original study aimed to model the relationship between air pollution and mortality, addressing challenges like multicollinearity. While adhering to the original methodology, we introduced Ridge Regression, Mallows’ $C_p$, and Principal Component Regression (PCR) to improve the analysis and enhance computational efficiency.
 
-Key findings include that Ridge Regression stabilized coefficients, particularly for multicollinear variables like NO_x and HC, improving variance with a slight trade-off in bias, though its predictive accuracy (R²) lagged behind Mallows’ $C_p$ and OLS models. Mallows’ $C_p$, implemented with an optimized algorithm, avoided exhaustive computation of over 32,000 models, producing a reduced model with the highest R² (0.7648) and the lowest AIC. PCR addressed multicollinearity through dimensionality reduction, offering similar predictive accuracy to OLS but with a marginally lower R² (0.712), highlighting an alternative approach to stabilize coefficients and simplify models.
+Key findings include that Ridge Regression stabilized coefficients, particularly for multicollinear variables like $NO_x$ and $HC$, improving variance with a slight trade-off in bias, though its predictive accuracy (R²) lagged behind Mallows’ $C_p$ and OLS models. Mallows’ $C_p$, implemented with an optimized algorithm, avoided exhaustive computation of over 32,000 models, producing a reduced model with the highest R² (0.7648) and the lowest AIC. PCR addressed multicollinearity through dimensionality reduction, offering similar predictive accuracy to OLS but with a marginally lower R² (0.712), highlighting an alternative approach to stabilize coefficients and simplify models.
 
 Key contributions and deviations compared to the original study include refining Mallows’ $C_p$ selection for improved computational efficiency, introducing PCR for modern multicollinearity management, and incorporating exploratory data analysis to provide additional insights into data patterns and relationships. Despite these advancements, challenges such as persistent multicollinearity among pollution variables (HC, NO_x, and SO_x) remain unresolved, confirming the original study's critique of the interdependence of these pollution variables.
 

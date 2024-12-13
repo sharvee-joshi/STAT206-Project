@@ -3268,11 +3268,14 @@ window.Quarto = {
   <li><a href="#ols-correlation-heatmap" id="toc-ols-correlation-heatmap" class="nav-link" data-scroll-target="#ols-correlation-heatmap">OLS Correlation Heatmap</a></li>
   <li><a href="#predictive-accuracy" id="toc-predictive-accuracy" class="nav-link" data-scroll-target="#predictive-accuracy">Predictive Accuracy</a></li>
   <li><a href="#ridge-trace-plot" id="toc-ridge-trace-plot" class="nav-link" data-scroll-target="#ridge-trace-plot">Ridge Trace Plot</a></li>
-  </ul></li>
   <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation">Interpretation</a></li>
-  <li><a href="#variable-selection" id="toc-variable-selection" class="nav-link" data-scroll-target="#variable-selection">Variable Selection</a>
+  </ul></li>
+  <li><a href="#variable-selection-mallows-c_p" id="toc-variable-selection-mallows-c_p" class="nav-link" data-scroll-target="#variable-selection-mallows-c_p">Variable Selection: Mallow’s <span class="math inline">\(C_p\)</span></a></li>
+  <li><a href="#the-background" id="toc-the-background" class="nav-link" data-scroll-target="#the-background">The Background</a>
   <ul class="collapse">
-  <li><a href="#mallows-c_p-background" id="toc-mallows-c_p-background" class="nav-link" data-scroll-target="#mallows-c_p-background">Mallow’s <span class="math inline">\(C_p\)</span> Background</a></li>
+  <li><a href="#choosing-the-number-of-predictors" id="toc-choosing-the-number-of-predictors" class="nav-link" data-scroll-target="#choosing-the-number-of-predictors">Choosing the Number of Predictors</a></li>
+  <li><a href="#the-reduced-model" id="toc-the-reduced-model" class="nav-link" data-scroll-target="#the-reduced-model">The Reduced Model</a></li>
+  <li><a href="#reduced-model-assumptions" id="toc-reduced-model-assumptions" class="nav-link" data-scroll-target="#reduced-model-assumptions">Reduced Model Assumptions</a></li>
   </ul></li>
   <li><a href="#principal-component-regression-pcr" id="toc-principal-component-regression-pcr" class="nav-link" data-scroll-target="#principal-component-regression-pcr">Principal Component Regression (PCR)</a>
   <ul class="collapse">
@@ -3682,7 +3685,7 @@ MR = (\sum D_i)(\sum (D_i/R_i))^{-1}
 </table>
 </div>
 </div>
-<p>The VIF values for some variables, particularly pollution-related predictors such as HC (Hydrocarbon), NOX (Nitrogen Oxides), and SO2 (Sulfur Dioxide), were extremely high, exceeding 100 in some cases. These values confirm the presence of severe multicollinearity among these variables. Ridge Regression and PCA were subsequently applied to mitigate this issue, as they are specifically designed to stabilize models in the presence of multicollinearity.</p>
+<p>The VIF values for some variables, particularly pollution-related predictors such as <span class="math inline">\(HC\)</span> (Hydrocarbon), <span class="math inline">\(NO_x\)</span> (Nitrogen Oxides), and <span class="math inline">\(SO_x\)</span> (Sulfur Dioxide), were extremely high, exceeding 100 in some cases. These values confirm the presence of severe multicollinearity among these variables. Ridge Regression and PCA were subsequently applied to mitigate this issue, as they are specifically designed to stabilize models in the presence of multicollinearity.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a><span class="co"># Scatterplot: Mortality vs. Pollution Variables</span></span>
 <span id="cb32-2"><a href="#cb32-2"></a>hc <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x =</span> HC, <span class="at">y =</span> MORT)) <span class="sc">+</span></span>
@@ -3742,7 +3745,7 @@ MR = (\sum D_i)(\sum (D_i/R_i))^{-1}
 <i class="callout-icon no-icon"></i>
 </div>
 <div class="callout-body-container">
-<p>“For example <span class="math inline">\(SO_2\)</span> is highly correlated with certain types of particulates and HC is closely tied to carbon monoxide and lead salts. Thus one cannot demonstrate a specific cause and effect even though the analysis quantifies the relationship.”</p>
+<p>“For example <span class="math inline">\(SO_2\)</span> is highly correlated with certain types of particulates and <span class="math inline">\(HC\)</span> is closely tied to carbon monoxide and lead salts. Thus one cannot demonstrate a specific cause and effect even though the analysis quantifies the relationship.”</p>
 </div>
 </div>
 </div>
@@ -3791,7 +3794,7 @@ MR = (\sum D_i)(\sum (D_i/R_i))^{-1}
 </div>
 </div>
 </div>
-<p>In the original dataset, the variable DENS represents population density, which has significantly larger values compared to other predictors. This disparity in scale skews the boxplot, overshadowing the distribution of other variables. Analysis results indicate that the variable DENS (Population Density) exhibits significantly larger values compared to other predictors, causing the boxplot to overshadow the distribution of other variables. Upon excluding the DENS variable, the boxplot highlights multiple outliers in pollution-related predictors such as HC (Hydrocarbon), NOX (Nitrogen Oxides), and SOX (Sulfur Oxides). These outliers suggest potential multicollinearity and underscore the need for further analysis to properly interpret the relationships between these variables and mortality rates.</p>
+<p>In the original dataset, the variable DENS represents population density, which has significantly larger values compared to other predictors. This disparity in scale skews the boxplot, overshadowing the distribution of other variables. Analysis results indicate that the variable DENS (Population Density) exhibits significantly larger values compared to other predictors, causing the boxplot to overshadow the distribution of other variables. Upon excluding the DENS variable, the boxplot highlights multiple outliers in pollution-related predictors such as <span class="math inline">\(HC\)</span> (Hydrocarbon), <span class="math inline">\(NO_x\)</span> (Nitrogen Oxides), and <span class="math inline">\(SO_x\)</span> (Sulfur Oxides). These outliers suggest potential multicollinearity and underscore the need for further analysis to properly interpret the relationships between these variables and mortality rates.</p>
 </section>
 <section id="the-full-model" class="level2">
 <h2 class="anchored" data-anchor-id="the-full-model">The Full Model</h2>
@@ -3899,7 +3902,7 @@ W = 0.98274, p-value = 0.5548</code></pre>
 <span id="cb45-8"><a href="#cb45-8"></a></span>
 <span id="cb45-9"><a href="#cb45-9"></a>optimal_lambda</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.02312513</code></pre>
+<pre><code>[1] 0.01205746</code></pre>
 </div>
 </div>
 <p>Cross-validation was used to identify the optimal penalty parameter <span class="math inline">\(\lambda\)</span>. This was done with the use of the cv.glmnet function, which helped the balance between bias and variance trade-offs.</p>
@@ -3918,22 +3921,22 @@ W = 0.98274, p-value = 0.5548</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>16 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
                        s0
-(Intercept)  4.535475e-17
-PREC         2.480522e-01
-JANT        -1.750037e-01
-JULT        -9.154935e-02
-OVR65       -5.792957e-02
-POPN        -1.486354e-02
-EDUC        -1.142967e-01
-HOUS        -9.590328e-02
-DENS         1.226433e-01
-NONW         4.358975e-01
-WWDRK       -3.462487e-02
-POOR         4.079556e-02
-HC          -4.879111e-02
-NOX          4.531445e-02
-SOx          2.439352e-01
-HUMID        3.277160e-02</code></pre>
+(Intercept)  4.436973e-17
+PREC         2.731315e-01
+JANT        -2.161035e-01
+JULT        -1.325386e-01
+OVR65       -7.922821e-02
+POPN        -6.418517e-02
+EDUC        -1.243741e-01
+HOUS        -9.396516e-02
+DENS         1.157789e-01
+NONW         5.111625e-01
+WWDRK       -3.810365e-02
+POOR         2.798439e-02
+HC          -7.337650e-02
+NOX          6.558349e-02
+SOx          2.440751e-01
+HUMID        2.632420e-02</code></pre>
 </div>
 </div>
 <p>After finding the optimal <span class="math inline">\(\lambda\)</span>, the Ridge Regression model was fit using glmnet. This helped with stabilizing coefficients, it was particularly notable with high collinear predictors (e.g. NOX, HC). Reducing the influence of these variables without eliminating them.</p>
@@ -3973,77 +3976,77 @@ HUMID        3.277160e-02</code></pre>
 <tr class="even">
 <td style="text-align: left;">PREC</td>
 <td style="text-align: right;">0.3058371</td>
-<td style="text-align: right;">0.2480522</td>
+<td style="text-align: right;">0.2731315</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">JANT</td>
 <td style="text-align: right;">-0.3167439</td>
-<td style="text-align: right;">-0.1750037</td>
+<td style="text-align: right;">-0.2161035</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">JULT</td>
 <td style="text-align: right;">-0.2374017</td>
-<td style="text-align: right;">-0.0915494</td>
+<td style="text-align: right;">-0.1325386</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">OVR65</td>
 <td style="text-align: right;">-0.2134310</td>
-<td style="text-align: right;">-0.0579296</td>
+<td style="text-align: right;">-0.0792282</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">POPN</td>
 <td style="text-align: right;">-0.2322663</td>
-<td style="text-align: right;">-0.0148635</td>
+<td style="text-align: right;">-0.0641852</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">EDUC</td>
 <td style="text-align: right;">-0.2331429</td>
-<td style="text-align: right;">-0.1142967</td>
+<td style="text-align: right;">-0.1243741</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">HOUS</td>
 <td style="text-align: right;">-0.0538151</td>
-<td style="text-align: right;">-0.0959033</td>
+<td style="text-align: right;">-0.0939652</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">DENS</td>
 <td style="text-align: right;">0.0841631</td>
-<td style="text-align: right;">0.1226433</td>
+<td style="text-align: right;">0.1157789</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">NONW</td>
 <td style="text-align: right;">0.6395617</td>
-<td style="text-align: right;">0.4358975</td>
+<td style="text-align: right;">0.5111625</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">WWDRK</td>
 <td style="text-align: right;">-0.0138715</td>
-<td style="text-align: right;">-0.0346249</td>
+<td style="text-align: right;">-0.0381036</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">POOR</td>
 <td style="text-align: right;">-0.0112112</td>
-<td style="text-align: right;">0.0407956</td>
+<td style="text-align: right;">0.0279844</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">HC</td>
 <td style="text-align: right;">-0.9938278</td>
-<td style="text-align: right;">-0.0487911</td>
+<td style="text-align: right;">-0.0733765</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">NOX</td>
 <td style="text-align: right;">0.9981482</td>
-<td style="text-align: right;">0.0453145</td>
+<td style="text-align: right;">0.0655835</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">SOx</td>
 <td style="text-align: right;">0.0878937</td>
-<td style="text-align: right;">0.2439352</td>
+<td style="text-align: right;">0.2440751</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">HUMID</td>
 <td style="text-align: right;">0.0092198</td>
-<td style="text-align: right;">0.0327716</td>
+<td style="text-align: right;">0.0263242</td>
 </tr>
 </tbody>
 </table>
@@ -4142,8 +4145,8 @@ HUMID        3.277160e-02</code></pre>
 </div>
 <p>Variance Inflation Factors (VIF) were calculated for the OLS model to quantify multicollinearity.</p>
 <ul>
-<li><p>Predictors such as NOX and HC exhibited very hight VIF values (&gt;100), showing there is a severe multicollinear relationship.</p></li>
-<li><p>The Ridge Regression shows this issues are reduce, as shown by the stabilizatioon of coefficients.</p></li>
+<li><p>Predictors such as <span class="math inline">\(NO_x\)</span> and <span class="math inline">\(HC\)</span> exhibited very high VIF values (&gt;100), showing there is a severe multicollinear relationship.</p></li>
+<li><p>The Ridge Regression shows this issues are reduce, as shown by the stabilization of coefficients.</p></li>
 </ul>
 </section>
 <section id="ols-correlation-heatmap" class="level3">
@@ -4191,7 +4194,7 @@ HUMID        3.277160e-02</code></pre>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Ridge</td>
-<td style="text-align: right;">0.0045344</td>
+<td style="text-align: right;">0.0042692</td>
 </tr>
 </tbody>
 </table>
@@ -4238,9 +4241,8 @@ HUMID        3.277160e-02</code></pre>
 <li><p>Stabilization of more key predictors (e.g. PREC, DENS), show there relevance to the response variable with a lower <span class="math inline">\(\lambda\)</span> value.</p></li>
 </ul>
 </section>
-</section>
-<section id="interpretation" class="level2">
-<h2 class="anchored" data-anchor-id="interpretation">Interpretation</h2>
+<section id="interpretation" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation">Interpretation</h3>
 <p>Pollution Variables:</p>
 <ul>
 <li>The Ridge regression showed a lowered influence of multicollinear pollution variables. Such as, NOX, HC, and SOX, aligning with the expected outcomes.</li>
@@ -4258,16 +4260,18 @@ HUMID        3.277160e-02</code></pre>
 <li>This Ridge regression effectively lessened the multicollinearity, showing a stabilization of coefficient estimates and improved model.</li>
 </ul>
 </section>
-<section id="variable-selection" class="level2">
-<h2 class="anchored" data-anchor-id="variable-selection">Variable Selection</h2>
-<section id="mallows-c_p-background" class="level3">
-<h3 class="anchored" data-anchor-id="mallows-c_p-background">Mallow’s <span class="math inline">\(C_p\)</span> Background</h3>
+</section>
+<section id="variable-selection-mallows-c_p" class="level2">
+<h2 class="anchored" data-anchor-id="variable-selection-mallows-c_p">Variable Selection: Mallow’s <span class="math inline">\(C_p\)</span></h2>
+</section>
+<section id="the-background" class="level2">
+<h2 class="anchored" data-anchor-id="the-background">The Background</h2>
 <p>In order to start the process of eliminating variables, the author introduces Mallows’ <span class="math inline">\(C_p\)</span>. This statistics estimates the sum of squared biases plus the squared random errors in the response variable at all the data points. The statistic is calculated using: <span class="math display">\[
 C_p = \dfrac{RSS_p}{\hat{\sigma^2}} - (n- 2p)
 \]</span> Note, that <span class="math inline">\(p\)</span> is equal to the number of parameters, which includes the response variable. <span class="math inline">\(RSS_p\)</span> is the residual sum of squares for a particular regression being considered, and <span class="math inline">\(\hat{\sigma^2}\)</span> is the MSE value, or the mean square value of the given regression.</p>
 <p>The author goes into length about how he was able to calculate the statistic by using a certain algorithm described in <em>Technometrics: Computational Efficiency in the Selection of Regression Variables</em><span class="citation" data-cites="technometrics1">(<a href="#ref-technometrics1" role="doc-biblioref">LaMotte 1970</a>)</span>, an article written by LaMotte and Hocking. This algorithm takes over 32,000 total possible regression and looks at the best equations from these. His result was that they found approximately 4.5% of the 32,000 possibilities to yield a low <span class="math inline">\(C_p\)</span> value. Using modern technology, this algorithm is automatically implemented for us by using the function <code>regsubsets</code>. By using this function, we’re able to quickly fish through the different <span class="math inline">\(C_p\)</span> values and find the best fitting model. Essentially, we would like to find a <span class="math inline">\(C_p\)</span> value that is close to the given number of parameters for that model. For example, the paper notes that their minimum <span class="math inline">\(C_p\)</span> value was 3.55, so they picked the model with the “best” set of five variables. Using this idea, we construct our own <span class="math inline">\(C_p\)</span> and conduct a test.</p>
-<section id="choosing-the-number-of-predictors" class="level4">
-<h4 class="anchored" data-anchor-id="choosing-the-number-of-predictors">Choosing the Number of Predictors</h4>
+<section id="choosing-the-number-of-predictors" class="level3">
+<h3 class="anchored" data-anchor-id="choosing-the-number-of-predictors">Choosing the Number of Predictors</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb56"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1"></a><span class="co">#plotting mallow&#39;s Cp</span></span>
 <span id="cb56-2"><a href="#cb56-2"></a></span>
@@ -4444,8 +4448,8 @@ C_p = \dfrac{RSS_p}{\hat{\sigma^2}} - (n- 2p)
 </div>
 <p>The table above shows us first, the number of predictors in a given model, the <span class="math inline">\(C_p\)</span> value for that model, the number of parameters that would be in the model, as in including the intercept, and then finally, the absolute value for the difference of the statistic value and the number of parameters. We can see that the best model will be one that has 14 parameters in total, or 13 predictor variables and 1 intercept variable. That is because the difference value is the smallest. Thus, we can move on to determining which model this is and looking at the analysis of it.</p>
 </section>
-<section id="the-reduced-model" class="level4">
-<h4 class="anchored" data-anchor-id="the-reduced-model">The Reduced Model</h4>
+<section id="the-reduced-model" class="level3">
+<h3 class="anchored" data-anchor-id="the-reduced-model">The Reduced Model</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb58"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1"></a><span class="co">#Step 1: find out the optimal number of coefficients according to CP, then use that to create a variable for the predictors</span></span>
 <span id="cb58-2"><a href="#cb58-2"></a>min_cp_index <span class="ot">&lt;-</span> <span class="fu">which.min</span>(cp_dat<span class="sc">$</span>cp_diff)</span>
@@ -4507,8 +4511,8 @@ F-statistic: 11.51 on 13 and 46 DF,  p-value: 1.885e-10</code></pre>
 \end{align}
 \]</span> This seems to make sense as in the full model, both these coefficients had low partial t-test p-values, indicating little significance to the model. We also get an <span class="math inline">\(R^2\)</span> value equal to 0.7648, meaning that our reduced model using <span class="math inline">\(C_p\)</span> actually performed better than the authors. I am not entirely sure why my model appeared to do better than the authors; the author took the time to run every single time of model and the various combinations, but perhaps that was not needed.</p>
 </section>
-<section id="reduced-model-assumptions" class="level4">
-<h4 class="anchored" data-anchor-id="reduced-model-assumptions">Reduced Model Assumptions</h4>
+<section id="reduced-model-assumptions" class="level3">
+<h3 class="anchored" data-anchor-id="reduced-model-assumptions">Reduced Model Assumptions</h3>
 <p>Now let’s see if our reduced model using Mallows’ <span class="math inline">\(C_p\)</span> checks the assumptions.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb63"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1"></a><span class="co">#checking the residuals for the reduced CP Model</span></span>
@@ -4595,7 +4599,6 @@ W = 0.98396, p-value = 0.6164</code></pre>
 </div>
 </div>
 <p>Thankfully, it appears that the reduced model is actually performing better than the full model as the AIC value is lower. It does appear as though getting rid of WWDRK and POOR appeared to help the model perform better. While I did deviate from the author’s original algorithm for variable selection, I do believe I ran a more efficient code: running through over 32,000 different models to only get a lower performing model did not seem plausible to me, and while my code itself may not be as thorough as the author’s, it definitely is more efficient and therefore less computationally intense for someone who would want to recreate this code.</p>
-</section>
 </section>
 </section>
 <section id="principal-component-regression-pcr" class="level2">
@@ -5048,7 +5051,7 @@ HUMID  0.085606526</code></pre>
 <section id="summary" class="level2">
 <h2 class="anchored" data-anchor-id="summary">Summary</h2>
 <p>This project replicated and extended the analysis from the article “Instabilities of Regression Estimates Relating Air Pollution to Mortality” using modern statistical techniques and computational tools. The original study aimed to model the relationship between air pollution and mortality, addressing challenges like multicollinearity. While adhering to the original methodology, we introduced Ridge Regression, Mallows’ <span class="math inline">\(C_p\)</span>, and Principal Component Regression (PCR) to improve the analysis and enhance computational efficiency.</p>
-<p>Key findings include that Ridge Regression stabilized coefficients, particularly for multicollinear variables like NO_x and HC, improving variance with a slight trade-off in bias, though its predictive accuracy (R²) lagged behind Mallows’ <span class="math inline">\(C_p\)</span> and OLS models. Mallows’ <span class="math inline">\(C_p\)</span>, implemented with an optimized algorithm, avoided exhaustive computation of over 32,000 models, producing a reduced model with the highest R² (0.7648) and the lowest AIC. PCR addressed multicollinearity through dimensionality reduction, offering similar predictive accuracy to OLS but with a marginally lower R² (0.712), highlighting an alternative approach to stabilize coefficients and simplify models.</p>
+<p>Key findings include that Ridge Regression stabilized coefficients, particularly for multicollinear variables like <span class="math inline">\(NO_x\)</span> and <span class="math inline">\(HC\)</span>, improving variance with a slight trade-off in bias, though its predictive accuracy (R²) lagged behind Mallows’ <span class="math inline">\(C_p\)</span> and OLS models. Mallows’ <span class="math inline">\(C_p\)</span>, implemented with an optimized algorithm, avoided exhaustive computation of over 32,000 models, producing a reduced model with the highest R² (0.7648) and the lowest AIC. PCR addressed multicollinearity through dimensionality reduction, offering similar predictive accuracy to OLS but with a marginally lower R² (0.712), highlighting an alternative approach to stabilize coefficients and simplify models.</p>
 <p>Key contributions and deviations compared to the original study include refining Mallows’ <span class="math inline">\(C_p\)</span> selection for improved computational efficiency, introducing PCR for modern multicollinearity management, and incorporating exploratory data analysis to provide additional insights into data patterns and relationships. Despite these advancements, challenges such as persistent multicollinearity among pollution variables (HC, NO_x, and SO_x) remain unresolved, confirming the original study’s critique of the interdependence of these pollution variables.</p>
 </section>
 <section id="acknowledgements" class="level2">

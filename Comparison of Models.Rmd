@@ -1,0 +1,137 @@
+---
+title: "Comparison of Metrics"
+author: "Makena Grigsby"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+Ridge AIC 
+```{r}
+# Use the minimum cross-validation error (cvm) to approximate Ridge AIC
+ridge_cv_mse <- min(cv_ridge$cvm)
+n <- nrow(data.norm)  # Number of observations
+ridge_num_coeffs <- sum(coef(ridge_model) != 0)  # Number of non-zero coefficients
+
+# Approximate Ridge AIC
+ridge_aic_approx <- n * log(ridge_cv_mse) + 2 * ridge_num_coeffs
+
+cat("AIC of the Ridge Regression:", ridge_aic_approx, "\n")
+```
+
+#this one show "Full Model (OLS)", "Ridge Regression", "Mallows' Cp"
+
+```{r}
+# want to compare the AIC, ridge regression, CP Mallow, and PCA to the full model 
+
+# Extract AIC values
+ols_aic <- AIC(ols_model)  # Full Model AIC
+ridge_aic <- ridge_aic_approx  # Ridge AIC 
+cp_aic <- AIC(red_cp_model)  # Mallows' Cp 
+
+# Extract Mean Squared Errors (MSE)
+ols_mse <- mean((data.norm$MORT - predict(ols_model, data.norm))^2)
+ridge_mse <- ridge_cv_mse  # Ridge MSE from cross-validation
+cp_mse <- mean((data.norm$MORT - predict(red_cp_model, data.norm))^2)
+
+# Extract R-Squared Values
+ols_r2 <- summary(ols_model)$r.squared
+cp_r2 <- summary(red_cp_model)$r.squared
+ridge_r2 <- 1 - sum((data.norm$MORT - ridge_predictions)^2) / sum((data.norm$MORT - mean(data.norm$MORT))^2)
+
+# Assemble into dataframe
+comparison <- data.frame(
+  Model = c("Full Model (OLS)", "Ridge Regression", "Mallows' Cp"),
+  AIC = c(ols_aic, ridge_aic, cp_aic),
+  MSE = c(ols_mse, ridge_mse, cp_mse),
+  R_Squared = c(ols_r2, ridge_r2, cp_r2)
+)
+
+# Display 
+library(knitr)
+kable(comparison, col.names = c("Model", "AIC", "MSE", "R-Squared"), caption = "Model Comparison Summary")
+
+
+```
+
+##this one shows "Full Model (OLS)", "Mallows' Cp", "Principal Component Regression", "Ridge Regression"
+
+```{r}
+# want to compare the AIC, ridge regression, CP Mallow, and PCA to the full model
+# Extract metrics for all models
+
+# AIC values
+ols_aic <- AIC(ols_model)
+cp_aic <- AIC(red_cp_model)
+pcr_aic <- AIC(reduced_pcr)
+ridge_aic <- ridge_aic_approx
+
+# MSE values
+ols_mse <- mean((Y - predict(ols_model, data.norm))^2)
+cp_mse <- mean((Y - predict(red_cp_model, data.norm))^2)
+pcr_mse <- mean((Y - predict(reduced_pcr, newdata = principal_components))^2)
+ridge_mse <- ridge_cv_mse
+
+# R-squared values
+ols_r2 <- summary(ols_model)$r.squared
+cp_r2 <- summary(red_cp_model)$r.squared
+pcr_r2 <- summary(reduced_pcr)$r.squared
+ridge_r2 <- 1 - sum((Y - ridge_predictions)^2) / sum((Y - mean(Y))^2)
+
+# Combine all into a data frame
+model_comparison <- data.frame(
+  Model = c("Full Model (OLS)", "Mallows' Cp", "Principal Component Regression", "Ridge Regression"),
+  AIC = c(ols_aic, cp_aic, pcr_aic, ridge_aic),
+  MSE = c(ols_mse, cp_mse, pcr_mse, ridge_mse),
+  R_Squared = c(ols_r2, cp_r2, pcr_r2, ridge_r2)
+)
+
+# Display 
+library(knitr)
+kable(model_comparison, col.names = c("Model", "AIC", "MSE", "R-Squared"), caption = "Model Comparison Across Metrics")
+
+```
+
+Analysis of Model Comparison Across Metrics
+This table compares four models: Full Model (OLS),  Mallows' $C_p$, Principal Component Regression (PCR), and Ridge Regression. Each model is evaluated using three metrics: AIC (Akaike Information Criterion), Mean Squared Error (MSE), $R^{2}$. Below is a summary of these findings: 
+
+
+\textunderline{Full Model (OLS)}
+
+- \textbf{AIC}: -128.2472
+- \textbf{MSE}: 0.0039187
+- \textbf{$R^{2}$}: 0.7648786
+
+The Full Model shows the highest $R^{2}$, showing the most variance in the response variable. It also has the lowest MSE, suggesting strong predictive accuracy. However, please note the relatively high AIC, suggesting overfitting, as all predictors are included without accounting for multicollinearity. 
+
+\textunderline{Mallows' $C_p$} 
+
+- \textbf{AIC}: −139.0327
+- \textbf{MSE}: 0.0044194
+- \textbf{$R^{2}$}: 0.7348369
+
+Mallows' $C_p$, reduces model complexity by selecting a subset of predictors. This does show improvement with the AIC in comparison to the OLS but does sacrifice slight accuracy, as shown in the higher MSE value, and smaller $R^{2}$. This models balances simplicity with performance and is useful when interpretability is important. 
+
+\textunderline{Principal Component Regression (PCR)} (please take a closer look at the PCR analysis. Not super sure about it)
+
+- \textbf{AIC}: −134.1655
+- \textbf{MSE}: 0.6713502
+- \textbf{$R^{2}$}: 0.7124305
+
+PCR addresses multicollinearity by transforming predictors into orthogonal components. Its MSE is lower than other models, reflecting weaker predictive performance. Its AIC suggests moderate model complexity, but the results indicate PCR may not be ideal for this dataset.
+
+\textunderline{Ridge Regression}
+
+
+- \textbf{AIC}: −260.9843
+- \textbf{MSE}: 0.0075737
+- \textbf{$R^{2}$}: 0.7214032
+
+Ridge Regression effectively addresses multicollinearity through regularization, resulting in the lowest AIC. However, its MSE is slightly higher than Mallows' $C_p$and OLS, and its $R^{2}$ is lower than OLS. Ridge offers stability and simplicity but trades off some predictive precision.
+
+
